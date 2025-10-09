@@ -549,11 +549,12 @@ export class AuthService {
     };
 
     const accessToken = this.jwtService.sign(payload, {
-      expiresIn: this.configService.get<string>('JWT_EXPIRES_IN'),
+      expiresIn: this.configService.get<string>('JWT_EXPIRES_IN') || '7d',
     });
 
     const refreshToken = this.jwtService.sign(payload, {
-      expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRES_IN'),
+      expiresIn:
+        this.configService.get<string>('JWT_REFRESH_EXPIRES_IN') || '30d',
     });
 
     // Xóa hoàn toàn permission check - Admin có thể truy cập tất cả
