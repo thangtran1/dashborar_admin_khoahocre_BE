@@ -10,6 +10,7 @@ import { TeachersModule } from './modules/teachers/teachers.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { SeederModule } from './modules/seeder/seeder.module';
 import { ChatModule } from './modules/chat/chat.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ChatModule } from './modules/chat/chat.module';
     CategoriesModule,
     SeederModule,
     ChatModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
