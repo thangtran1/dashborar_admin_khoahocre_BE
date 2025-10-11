@@ -9,6 +9,7 @@ import {
   CategoryDocument,
 } from '../categories/schemas/category.schema';
 import { Course, CourseDocument } from '../courses/schemas/course.schema';
+import { BannerSeeder } from '../banner/banner.seeder';
 
 @Injectable()
 export class SeederService {
@@ -19,6 +20,7 @@ export class SeederService {
     @InjectModel(Teacher.name) private teacherModel: Model<TeacherDocument>,
     @InjectModel(Category.name) private categoryModel: Model<CategoryDocument>,
     @InjectModel(Course.name) private courseModel: Model<CourseDocument>,
+    private bannerSeeder: BannerSeeder,
   ) {}
 
   async seedAll(): Promise<void> {
@@ -29,6 +31,7 @@ export class SeederService {
       await this.seedTeachers();
       await this.seedCategories();
       await this.seedCourses();
+      await this.bannerSeeder.seed();
 
       this.logger.log('Hoàn thành seed dữ liệu!');
     } catch (error) {
@@ -45,6 +48,7 @@ export class SeederService {
       await this.teacherModel.deleteMany({});
       await this.categoryModel.deleteMany({});
       await this.courseModel.deleteMany({});
+      await this.bannerSeeder.clear();
 
       this.logger.log('Hoàn thành xóa dữ liệu!');
     } catch (error) {

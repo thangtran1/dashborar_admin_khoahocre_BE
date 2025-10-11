@@ -11,6 +11,7 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { SeederModule } from './modules/seeder/seeder.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
+import { BannerModule } from './modules/banner/banner.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
     SeederModule,
     ChatModule,
     NotificationsModule,
+    BannerModule,
   ],
   controllers: [AppController],
   providers: [AppService],

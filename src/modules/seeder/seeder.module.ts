@@ -9,6 +9,7 @@ import {
 import { Course, CourseSchema } from '../courses/schemas/course.schema';
 import { SeederService } from './seeder.service';
 import { SeederController } from './seeder.controller';
+import { BannerModule } from '../banner/banner.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { SeederController } from './seeder.controller';
       { name: Category.name, schema: CategorySchema },
       { name: Course.name, schema: CourseSchema },
     ]),
+    BannerModule,
   ],
   controllers: [SeederController],
   providers: [SeederService],
