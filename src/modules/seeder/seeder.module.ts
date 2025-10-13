@@ -4,11 +4,13 @@ import { User, UserSchema } from '../users/schemas/user.schema';
 import { SeederService } from './seeder.service';
 import { SeederController } from './seeder.controller';
 import { BannerModule } from '../banner/banner.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     BannerModule,
+    UsersModule,
   ],
   controllers: [SeederController],
   providers: [SeederService],

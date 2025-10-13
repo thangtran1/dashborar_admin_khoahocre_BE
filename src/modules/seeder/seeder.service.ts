@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import { User, UserDocument } from '../users/schemas/user.schema';
 import { BannerSeeder } from '../banner/banner.seeder';
+import { UsersSeeder } from '../users/users.seeder';
 
 @Injectable()
 export class SeederService {
@@ -12,6 +13,7 @@ export class SeederService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private bannerSeeder: BannerSeeder,
+    private usersSeeder: UsersSeeder,
   ) {}
 
   async seedAll(): Promise<void> {

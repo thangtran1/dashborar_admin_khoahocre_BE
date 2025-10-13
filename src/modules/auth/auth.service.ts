@@ -176,10 +176,10 @@ export class AuthService {
       const decoded: { id: string } = this.jwtService.verify(
         resetPasswordDto.token,
       );
-      await this.usersService.updatePassword(
-        decoded.id,
-        resetPasswordDto.newPassword,
-      );
+      await this.usersService.updatePassword(decoded.id, {
+        currentPassword: resetPasswordDto.currentPassword,
+        newPassword: resetPasswordDto.newPassword,
+      });
 
       return {
         success: true,
