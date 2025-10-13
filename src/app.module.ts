@@ -9,6 +9,7 @@ import { SeederModule } from './modules/seeder/seeder.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { BannerModule } from './modules/banner/banner.module';
+import { SystemModule } from './modules/system/system.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { BannerModule } from './modules/banner/banner.module';
     ChatModule,
     NotificationsModule,
     BannerModule,
+    SystemModule,
   ],
   controllers: [AppController],
   providers: [AppService],

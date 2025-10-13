@@ -12,7 +12,13 @@ import {
   HttpCode,
   HttpStatus,
   ValidationPipe,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
@@ -25,6 +31,7 @@ import {
   UpdateUserRoleDto,
   UpdateUserStatusDto,
 } from './dto/update-user.dto';
+import { AdminChangePasswordDto } from './dto/admin-change-password.dto';
 import { QueryUserDto } from './dto/query-user.dto';
 import { BulkUpdateStatusDto, BulkDeleteDto } from './dto/bulk-operations.dto';
 import { UserRole } from './schemas/user.schema';
@@ -102,6 +109,81 @@ export class UsersController {
         data: null,
       };
     }
+  }
+
+  @Patch('admin/change-password')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @HttpCode(HttpStatus.OK)
+  async adminChangePassword(
+    @CurrentUser() user: { id: string; role: string },
+    @Body() changePasswordDto: AdminChangePasswordDto,
+  ) {
+    try {
+      await this.usersService.updatePassword(user.id, {
+        currentPassword: changePasswordDto.currentPassword,
+        newPassword: changePasswordDto.newPassword,
+      });
+      return {
+        success: true,
+        message: 'Đổi mật khẩu admin thành công',
+        data: null,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: (error as Error).message || 'Lỗi khi đổi mật khẩu admin',
+        data: null,
+      };
+    }
+  }
+
+  @Post('upload-avatar')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(
+    FileInterceptor('avatar', {
+      storage: diskStorage({
+        destination: './public/uploads/avatars',
+        filename: (req, file, cb) => {
+          const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+          cb(null, `avatar-${uniqueSuffix}${extname(file.originalname)}`);
+        },
+      }),
+      fileFilter: (req, file, cb) => {
+        const allowed = /\/(jpg|jpeg|png)$/i.test(file.mimetype);
+        if (allowed) {
+          cb(null, true);
+        } else {
+          cb(
+            new BadRequestException(
+              'Chỉ chấp nhận file ảnh JPG, JPEG hoặc PNG',
+            ),
+            false,
+          );
+        }
+      },
+      limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
+    }),
+  )
+  async uploadAvatar(
+    @CurrentUser() user: { id: string; role: string },
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    if (!file) {
+      throw new BadRequestException('Không có file được upload');
+    }
+
+    const avatarUrl = `/uploads/avatars/${file.filename}`;
+    const updatedUser = await this.usersService.updateAvatar(
+      user.id,
+      avatarUrl,
+    );
+
+    return {
+      success: true,
+      message: 'Upload avatar thành công',
+      data: { avatarUrl, user: updatedUser },
+    };
   }
 
   // ========== ADMIN ENDPOINTS ==========

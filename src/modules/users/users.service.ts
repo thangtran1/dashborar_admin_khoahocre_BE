@@ -206,6 +206,24 @@ export class UsersService {
       .exec();
   }
 
+  async updateAvatar(id: string, avatarUrl: string): Promise<UserDocument> {
+    const updatedUser = await this.userModel
+      .findByIdAndUpdate(
+        id,
+        { avatar: avatarUrl, updatedAt: new Date() },
+        { new: true },
+      )
+      .select('-password')
+      .lean()
+      .exec();
+
+    if (!updatedUser) {
+      throw new NotFoundException('Người dùng không tồn tại');
+    }
+
+    return updatedUser as unknown as UserDocument;
+  }
+
   async updateRole(
     id: string,
     updateRoleDto: UpdateUserRoleDto,

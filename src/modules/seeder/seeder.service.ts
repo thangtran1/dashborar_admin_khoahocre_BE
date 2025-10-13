@@ -5,6 +5,7 @@ import * as bcrypt from 'bcryptjs';
 import { User, UserDocument } from '../users/schemas/user.schema';
 import { BannerSeeder } from '../banner/banner.seeder';
 import { UsersSeeder } from '../users/users.seeder';
+import { SystemSeeder } from '../system/system.seeder';
 
 @Injectable()
 export class SeederService {
@@ -14,6 +15,7 @@ export class SeederService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private bannerSeeder: BannerSeeder,
     private usersSeeder: UsersSeeder,
+    private systemSeeder: SystemSeeder,
   ) {}
 
   async seedAll(): Promise<void> {
@@ -22,6 +24,7 @@ export class SeederService {
 
       await this.seedUsers();
       await this.bannerSeeder.seed();
+      await this.systemSeeder.seed();
 
       this.logger.log('Hoàn thành seed dữ liệu!');
     } catch (error) {
@@ -36,6 +39,7 @@ export class SeederService {
 
       await this.userModel.deleteMany({});
       await this.bannerSeeder.clear();
+      await this.systemSeeder.clear();
 
       this.logger.log('Hoàn thành xóa dữ liệu!');
     } catch (error) {

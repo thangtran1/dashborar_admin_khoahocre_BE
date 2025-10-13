@@ -1,12 +1,6 @@
 import { PartialType, OmitType } from '@nestjs/mapped-types';
 import { CreateUserDto } from './create-user.dto';
-import {
-  IsString,
-  IsNotEmpty,
-  MinLength,
-  IsEnum,
-  IsOptional,
-} from 'class-validator';
+import { IsString, IsNotEmpty, MinLength, IsEnum } from 'class-validator';
 import { UserRole, UserStatus } from '../schemas/user.schema';
 
 export class UpdateUserDto extends PartialType(
@@ -14,7 +8,7 @@ export class UpdateUserDto extends PartialType(
 ) {}
 
 export class UpdateUserPasswordDto {
-  @IsOptional({ message: 'Mật khẩu cũ không được để trống' })
+  @IsString({ message: 'Mật khẩu cũ phải là chuỗi' })
   @IsNotEmpty({ message: 'Mật khẩu cũ không được để trống' })
   currentPassword: string;
 
