@@ -1,0 +1,148 @@
+{
+  "messages": [],
+  "systemsettings": [
+    {
+      "_id": "68ee2abb79078ac3af65ccf2",
+      "defaultLanguage": "vi",
+      "systemName": "Hệ thống Admin",
+      "systemDescription": "Hệ thống quản lý hệ thống",
+      "createdAt": "2025-10-14T10:49:31.103Z",
+      "updatedAt": "2025-10-14T10:49:31.103Z",
+      "__v": 0
+    }
+  ],
+  "banners": [
+    {
+      "_id": "68ee2abb79078ac3af65cceb",
+      "content": "🎉 Khuyến mãi đặc biệt - Giảm giá 50% tất cả khóa học! Đăng ký ngay hôm nay!",
+      "isActive": true,
+      "order": 1,
+      "__v": 0,
+      "createdAt": "2025-10-14T10:49:31.007Z",
+      "updatedAt": "2025-10-14T10:49:31.007Z"
+    },
+    {
+      "_id": "68ee2abb79078ac3af65ccec",
+      "content": "📚 Khóa học mới về React và TypeScript đã ra mắt - Học ngay với giá ưu đãi",
+      "isActive": true,
+      "order": 2,
+      "__v": 0,
+      "createdAt": "2025-10-14T10:49:31.007Z",
+      "updatedAt": "2025-10-14T10:49:31.007Z"
+    },
+    {
+      "_id": "68ee2abb79078ac3af65cced",
+      "content": "🚀 Tham gia cộng đồng học tập online lớn nhất Việt Nam - Miễn phí 100%",
+      "isActive": true,
+      "order": 3,
+      "__v": 0,
+      "createdAt": "2025-10-14T10:49:31.007Z",
+      "updatedAt": "2025-10-14T10:49:31.007Z"
+    },
+    {
+      "_id": "68ee2abb79078ac3af65ccee",
+      "content": "💡 Học lập trình từ cơ bản đến nâng cao với các chuyên gia hàng đầu",
+      "isActive": false,
+      "order": 4,
+      "__v": 0,
+      "createdAt": "2025-10-14T10:49:31.007Z",
+      "updatedAt": "2025-10-14T10:49:31.007Z"
+    },
+    {
+      "_id": "68ee2abb79078ac3af65ccef",
+      "content": "🎯 Chương trình đào tạo thực chiến - Cam kết việc làm sau khóa học",
+      "isActive": true,
+      "order": 5,
+      "__v": 0,
+      "createdAt": "2025-10-14T10:49:31.007Z",
+      "updatedAt": "2025-10-14T10:49:31.007Z"
+    }
+  ],
+  "notifications": [],
+  "users": [
+    {
+      "_id": "68ee2ab979078ac3af65ccce",
+      "email": "thangtrandz04@gmail.com",
+      "name": "Admin",
+      "password": "$2b$10$SBV7MIzVPy038MAQH6g2AeD1ldru1NromkmmgdZpZuHejQREOv0nq",
+      "role": "admin",
+      "status": "active",
+      "loginCount": 0,
+      "isEmailVerified": true,
+      "lastLoginAt": "2025-10-14T10:49:29.984Z",
+      "createdAt": "2025-10-14T10:49:29.986Z",
+      "updatedAt": "2025-10-14T10:49:29.986Z",
+      "__v": 0
+    },
+    {
+      "_id": "68ee2aba79078ac3af65ccdc",
+      "email": "user1@khoahocre.com",
+      "name": "Nguyễn Văn A",
+      "password": "$2b$10$SBV7MIzVPy038MAQH6g2AeD1ldru1NromkmmgdZpZuHejQREOv0nq",
+      "role": "user",
+      "status": "active",
+      "loginCount": 0,
+      "isEmailVerified": true,
+      "lastLoginAt": "2025-10-14T10:49:30.538Z",
+      "createdAt": "2025-10-14T10:49:30.539Z",
+      "updatedAt": "2025-10-14T10:49:30.539Z",
+      "__v": 0
+    },
+    {
+      "_id": "68ee2aba79078ac3af65ccdf",
+      "email": "user2@khoahocre.com",
+      "name": "Trần Thị B",
+      "password": "$2b$10$SBV7MIzVPy038MAQH6g2AeD1ldru1NromkmmgdZpZuHejQREOv0nq",
+      "role": "user",
+      "status": "active",
+      "loginCount": 0,
+      "isEmailVerified": true,
+      "lastLoginAt": "2025-10-14T10:49:30.631Z",
+      "createdAt": "2025-10-14T10:49:30.631Z",
+      "updatedAt": "2025-10-14T10:49:30.631Z",
+      "__v": 0
+    },
+    {
+      "_id": "68ee2aba79078ac3af65cce2",
+      "email": "user3@khoahocre.com",
+      "name": "Lê Văn C",
+      "password": "$2b$10$SBV7MIzVPy038MAQH6g2AeD1ldru1NromkmmgdZpZuHejQREOv0nq",
+      "role": "user",
+      "status": "active",
+      "loginCount": 0,
+      "isEmailVerified": true,
+      "lastLoginAt": "2025-10-14T10:49:30.725Z",
+      "createdAt": "2025-10-14T10:49:30.725Z",
+      "updatedAt": "2025-10-14T10:49:30.725Z",
+      "__v": 0
+    },
+    {
+      "_id": "68ee2aba79078ac3af65cce5",
+      "email": "user4@khoahocre.com",
+      "name": "Phạm Thị D",
+      "password": "$2b$10$SBV7MIzVPy038MAQH6g2AeD1ldru1NromkmmgdZpZuHejQREOv0nq",
+      "role": "user",
+      "status": "active",
+      "loginCount": 0,
+      "isEmailVerified": true,
+      "lastLoginAt": "2025-10-14T10:49:30.818Z",
+      "createdAt": "2025-10-14T10:49:30.818Z",
+      "updatedAt": "2025-10-14T10:49:30.818Z",
+      "__v": 0
+    }
+  ],
+  "bannersettings": [
+    {
+      "_id": "68ee2aba79078ac3af65cce9",
+      "backgroundColor": "#1890ff",
+      "textColor": "#ffffff",
+      "scrollSpeed": 60,
+      "bannerSpacing": 30,
+      "isActive": true,
+      "createdAt": "2025-10-14T10:49:30.957Z",
+      "updatedAt": "2025-10-14T10:49:30.957Z",
+      "__v": 0
+    }
+  ],
+  "conversations": []
+}

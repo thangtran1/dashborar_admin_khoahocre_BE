@@ -10,6 +10,7 @@ import { ChatModule } from './modules/chat/chat.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { BannerModule } from './modules/banner/banner.module';
 import { SystemModule } from './modules/system/system.module';
+import { DatabaseModule } from './modules/database/database.module';
 
 @Module({
   imports: [
@@ -24,7 +25,9 @@ import { SystemModule } from './modules/system/system.module';
     NotificationsModule,
     BannerModule,
     SystemModule,
+    DatabaseModule,
   ],
+
   controllers: [AppController],
   providers: [AppService],
 })

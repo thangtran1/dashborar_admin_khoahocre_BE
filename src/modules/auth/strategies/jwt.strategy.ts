@@ -18,12 +18,17 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       ignoreExpiration: false,
       secretOrKey:
         configService.get<string>('JWT_SECRET') ||
-        'your-super-secret-jwt-key-here',
+        'your_super_secret_jwt_key_here_change_in_production',
     });
   }
 
   async validate(payload: JwtPayload) {
-    const user = await this.userModel.findById(payload.sub).exec();
+    console.log('🚀 ~ JwtStrategy ~ validate ~ payload:', payload);
+    console.log(
+      'Mongoose connection readyState:',
+      this.userModel.db.readyState,
+    );
+    const user = await this.userModel.findOne({ _id: payload.sub }).lean();
     if (!user) {
       throw new UnauthorizedException('User not found');
     }

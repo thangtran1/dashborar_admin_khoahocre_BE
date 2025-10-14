@@ -18,7 +18,7 @@ import { GoogleOAuthService } from './google-oauth.service';
       useFactory: (configService: ConfigService) => ({
         secret:
           configService.get<string>('JWT_SECRET') ||
-          'your-super-secret-jwt-key-here',
+          'your_super_secret_jwt_key_here_change_in_production',
         signOptions: {
           expiresIn: configService.get<string>('JWT_EXPIRES_IN') || '7d',
         },
