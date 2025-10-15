@@ -23,11 +23,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtPayload) {
-    console.log('🚀 ~ JwtStrategy ~ validate ~ payload:', payload);
-    console.log(
-      'Mongoose connection readyState:',
-      this.userModel.db.readyState,
-    );
     const user = await this.userModel.findOne({ _id: payload.sub }).lean();
     if (!user) {
       throw new UnauthorizedException('User not found');

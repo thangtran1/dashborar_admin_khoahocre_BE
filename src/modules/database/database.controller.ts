@@ -6,11 +6,10 @@ import {
   UploadedFile,
   Delete,
   Param,
-  Res,
+  Query,
 } from '@nestjs/common';
 import { DatabaseService } from './database.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import type { Response } from 'express';
 
 @Controller('database')
 export class DatabaseController {
@@ -44,8 +43,20 @@ export class DatabaseController {
   }
 
   @Get('backups')
-  listBackups() {
-    return this.databaseService.listBackups();
+  listBackups(
+    @Query('search') search?: string,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+    @Query('page') page = '1',
+    @Query('pageSize') pageSize = '10',
+  ) {
+    return this.databaseService.listBackups({
+      search,
+      startDate,
+      endDate,
+      page: parseInt(page),
+      pageSize: parseInt(pageSize),
+    });
   }
 
   @Delete('backups/:filename')
@@ -54,17 +65,14 @@ export class DatabaseController {
   }
 
   // 🔹 Tải file backup
-  @Get('backups/download/:filename')
-  async downloadBackup(
-    @Param('filename') filename: string,
-    @Res() res: Response,
-  ) {
-    return this.databaseService.downloadBackupFile(filename, res);
+  @Get('backups/download-json/:filename')
+  downloadBackupJson(@Param('filename') filename: string) {
+    return this.databaseService.downloadBackupFileAsJson(filename);
   }
 
   // 🔹 Xem nội dung file backup
   @Get('backups/view/:filename')
-  async viewBackup(@Param('filename') filename: string) {
+  viewBackup(@Param('filename') filename: string) {
     return this.databaseService.viewBackupFile(filename);
   }
 }

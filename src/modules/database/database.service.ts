@@ -18,6 +18,14 @@ export interface AdminHistory {
   admin?: string; // nếu muốn track user
 }
 
+export interface ListBackupsOptions {
+  search?: string;
+  startDate?: string;
+  endDate?: string;
+  page?: number;
+  pageSize?: number;
+}
+
 @Injectable()
 export class DatabaseService {
   private readonly logger = new Logger(DatabaseService.name);
@@ -134,15 +142,21 @@ export class DatabaseService {
   }
 
   // 2. Lấy lịch sử thao tác admin
-  listBackups() {
-    if (!fs.existsSync(this.backupDir))
+  listBackups(options: ListBackupsOptions = {}) {
+    const { search, startDate, endDate, page = 1, pageSize = 10 } = options;
+
+    if (!fs.existsSync(this.backupDir)) {
       return {
         success: true,
         message: 'Không có backup.',
         data: [],
+        total: 0,
+        page,
+        pageSize,
       };
-    const files = fs.readdirSync(this.backupDir);
-    const backups = files.map((file) => {
+    }
+
+    let files = fs.readdirSync(this.backupDir).map((file) => {
       const stats = fs.statSync(path.join(this.backupDir, file));
       return {
         filename: file,
@@ -150,13 +164,40 @@ export class DatabaseService {
         size: `${(stats.size / 1024).toFixed(2)} KB`,
       };
     });
+
+    // Filter theo tên file
+    if (search) {
+      const lowerSearch = search.toLowerCase();
+      files = files.filter((f) =>
+        f.filename.toLowerCase().includes(lowerSearch),
+      );
+    }
+
+    // Filter theo ngày
+    if (startDate) {
+      const start = new Date(startDate);
+      files = files.filter((f) => new Date(f.createdAt) >= start);
+    }
+    if (endDate) {
+      const end = new Date(endDate);
+      files = files.filter((f) => new Date(f.createdAt) <= end);
+    }
+
+    const total = files.length;
+
+    // Phân trang
+    const startIndex = (page - 1) * pageSize;
+    const paginatedFiles = files.slice(startIndex, startIndex + pageSize);
+
     return {
       success: true,
       message: 'Lấy danh sách backup thành công.',
-      data: backups,
+      data: paginatedFiles,
+      total,
+      page,
+      pageSize,
     };
   }
-
   deleteBackupFile(filename: string) {
     const filePath = path.join(this.backupDir, filename);
 
@@ -176,19 +217,24 @@ export class DatabaseService {
   /**
    * 💾 Tải file backup về
    */
-  async downloadBackupFile(filename: string, res: Response) {
+  downloadBackupFileAsJson(filename: string) {
     const filePath = path.join(this.backupDir, filename);
 
     if (!fs.existsSync(filePath)) {
       throw new NotFoundException(`Không tìm thấy file backup: ${filename}`);
     }
 
-    res.download(filePath, filename, (err) => {
-      if (err) {
-        this.logger.error(`Lỗi khi tải file: ${filename}`, err);
-        throw new InternalServerErrorException('Không thể tải file backup.');
-      }
-    });
+    const fileBuffer = fs.readFileSync(filePath);
+    const base64Data = fileBuffer.toString('base64');
+
+    return {
+      success: true,
+      message: 'Tải file backup thành công.',
+      data: {
+        filename,
+        content: base64Data,
+      },
+    };
   }
 
   /**
