@@ -2,12 +2,14 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import * as fs from 'fs';
 import * as path from 'path';
 import mongoose, { Connection, Types } from 'mongoose';
 import { Db, OptionalId, Document } from 'mongodb';
+import { Response } from 'express';
 
 export interface AdminHistory {
   action: 'backup' | 'restore' | 'delete';
@@ -152,6 +154,60 @@ export class DatabaseService {
       success: true,
       message: 'Lấy danh sách backup thành công.',
       data: backups,
+    };
+  }
+
+  deleteBackupFile(filename: string) {
+    const filePath = path.join(this.backupDir, filename);
+
+    if (!fs.existsSync(filePath)) {
+      throw new NotFoundException(`Không tìm thấy file backup: ${filename}`);
+    }
+
+    fs.unlinkSync(filePath);
+    this.logger.log(`Backup file deleted: ${filename}`);
+
+    return {
+      success: true,
+      message: `Đã xóa file backup ${filename} thành công.`,
+    };
+  }
+
+  /**
+   * 💾 Tải file backup về
+   */
+  async downloadBackupFile(filename: string, res: Response) {
+    const filePath = path.join(this.backupDir, filename);
+
+    if (!fs.existsSync(filePath)) {
+      throw new NotFoundException(`Không tìm thấy file backup: ${filename}`);
+    }
+
+    res.download(filePath, filename, (err) => {
+      if (err) {
+        this.logger.error(`Lỗi khi tải file: ${filename}`, err);
+        throw new InternalServerErrorException('Không thể tải file backup.');
+      }
+    });
+  }
+
+  /**
+   * 👁️ Xem chi tiết nội dung file backup trước khi tải
+   */
+  viewBackupFile(filename: string) {
+    const filePath = path.join(this.backupDir, filename);
+
+    if (!fs.existsSync(filePath)) {
+      throw new NotFoundException(`Không tìm thấy file backup: ${filename}`);
+    }
+
+    const fileContent = fs.readFileSync(filePath, 'utf8');
+    const jsonData = JSON.parse(fileContent);
+
+    return {
+      success: true,
+      message: `Xem nội dung file backup ${filename} thành công.`,
+      data: jsonData,
     };
   }
 }

@@ -5,9 +5,12 @@ import {
   UseInterceptors,
   UploadedFile,
   Delete,
+  Param,
+  Res,
 } from '@nestjs/common';
 import { DatabaseService } from './database.service';
 import { FileInterceptor } from '@nestjs/platform-express';
+import type { Response } from 'express';
 
 @Controller('database')
 export class DatabaseController {
@@ -43,5 +46,25 @@ export class DatabaseController {
   @Get('backups')
   listBackups() {
     return this.databaseService.listBackups();
+  }
+
+  @Delete('backups/:filename')
+  deleteBackup(@Param('filename') filename: string) {
+    return this.databaseService.deleteBackupFile(filename);
+  }
+
+  // 🔹 Tải file backup
+  @Get('backups/download/:filename')
+  async downloadBackup(
+    @Param('filename') filename: string,
+    @Res() res: Response,
+  ) {
+    return this.databaseService.downloadBackupFile(filename, res);
+  }
+
+  // 🔹 Xem nội dung file backup
+  @Get('backups/view/:filename')
+  async viewBackup(@Param('filename') filename: string) {
+    return this.databaseService.viewBackupFile(filename);
   }
 }
