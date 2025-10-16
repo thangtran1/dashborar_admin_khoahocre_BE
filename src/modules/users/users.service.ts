@@ -96,9 +96,7 @@ export class UsersService {
     const [users, total] = await Promise.all([
       this.userModel
         .find(filter)
-        .select(
-          '-password -otp -otpExpiry -emailVerificationToken -emailVerificationExpiry',
-        )
+        .select('-password -otp -otpExpiry')
         .sort(sort)
         .skip(skip)
         .limit(limit)
@@ -119,9 +117,7 @@ export class UsersService {
   async findById(id: string): Promise<UserDocument> {
     const user = await this.userModel
       .findById(id)
-      .select(
-        '-password -otp -otpExpiry -emailVerificationToken -emailVerificationExpiry',
-      )
+      .select('-password -otp -otpExpiry')
       .exec();
 
     if (!user) {
@@ -162,9 +158,7 @@ export class UsersService {
         { ...updateUserDto, updatedAt: new Date() },
         { new: true },
       )
-      .select(
-        '-password -otp -otpExpiry -emailVerificationToken -emailVerificationExpiry',
-      )
+      .select('-password -otp -otpExpiry ')
       .exec();
 
     if (!user) {
@@ -234,9 +228,7 @@ export class UsersService {
         { role: updateRoleDto.role, updatedAt: new Date() },
         { new: true },
       )
-      .select(
-        '-password -otp -otpExpiry -emailVerificationToken -emailVerificationExpiry',
-      )
+      .select('-password -otp -otpExpiry ')
       .exec();
 
     if (!user) {
@@ -258,9 +250,7 @@ export class UsersService {
         { status: updateStatusDto.status, updatedAt: new Date() },
         { new: true },
       )
-      .select(
-        '-password -otp -otpExpiry -emailVerificationToken -emailVerificationExpiry',
-      )
+      .select('-password -otp -otpExpiry')
       .exec();
 
     if (!user) {
@@ -274,31 +264,29 @@ export class UsersService {
 
   // ========== DELETE OPERATIONS ==========
 
-  async remove(id: string): Promise<void> {
-    const result = await this.userModel.findByIdAndDelete(id).exec();
+  async removeMany(ids: string[]): Promise<void> {
+    const result = await this.userModel
+      .deleteMany({ _id: { $in: ids } })
+      .exec();
 
-    if (!result) {
+    if (result.deletedCount === 0) {
       throw new NotFoundException('Không tìm thấy người dùng để xóa');
     }
   }
 
-  async softDelete(id: string): Promise<UserDocument> {
-    const user = await this.userModel
-      .findByIdAndUpdate(
-        id,
-        { status: UserStatus.INACTIVE, updatedAt: new Date() },
-        { new: true },
-      )
-      .select(
-        '-password -otp -otpExpiry -emailVerificationToken -emailVerificationExpiry',
+  async softDeleteMany(ids: string[]): Promise<number> {
+    const result = await this.userModel
+      .updateMany(
+        { _id: { $in: ids } },
+        { isDeleted: true, updatedAt: new Date() },
       )
       .exec();
 
-    if (!user) {
-      throw new NotFoundException('Không tìm thấy người dùng để vô hiệu hóa');
+    if (result.matchedCount === 0) {
+      throw new NotFoundException('Không tìm thấy người dùng để xóa mềm');
     }
 
-    return user;
+    return result.matchedCount;
   }
 
   // ========== UTILITY OPERATIONS ==========
@@ -393,23 +381,5 @@ export class UsersService {
       moderators,
       newUsersThisMonth,
     };
-  }
-
-  // ========== BULK OPERATIONS ==========
-
-  async bulkUpdateStatus(ids: string[], status: UserStatus): Promise<number> {
-    const result = await this.userModel
-      .updateMany({ _id: { $in: ids } }, { status, updatedAt: new Date() })
-      .exec();
-
-    return result.modifiedCount;
-  }
-
-  async bulkDelete(ids: string[]): Promise<number> {
-    const result = await this.userModel
-      .deleteMany({ _id: { $in: ids } })
-      .exec();
-
-    return result.deletedCount;
   }
 }

@@ -33,7 +33,6 @@ import {
 } from './dto/update-user.dto';
 import { AdminChangePasswordDto } from './dto/admin-change-password.dto';
 import { QueryUserDto } from './dto/query-user.dto';
-import { BulkUpdateStatusDto, BulkDeleteDto } from './dto/bulk-operations.dto';
 import { UserRole } from './schemas/user.schema';
 
 @Controller('user')
@@ -342,13 +341,16 @@ export class UsersController {
     }
   }
 
-  @Delete(':id')
+  @Delete()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @HttpCode(HttpStatus.OK)
-  async remove(@Param('id') id: string) {
+  async remove(
+    @Body('ids') ids: string[] | string, // có thể là 1 id hoặc nhiều id
+  ) {
     try {
-      await this.usersService.remove(id);
+      const idArray = Array.isArray(ids) ? ids : [ids];
+      await this.usersService.removeMany(idArray);
       return {
         success: true,
         message: 'Xóa người dùng thành công',
@@ -363,70 +365,21 @@ export class UsersController {
     }
   }
 
-  @Patch(':id/soft-delete')
+  @Delete('soft-delete')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async softDelete(@Param('id') id: string) {
+  async softDeleteMany(@Body('ids') ids: string[] | string) {
     try {
-      const user = await this.usersService.softDelete(id);
+      const idArray = Array.isArray(ids) ? ids : [ids];
+      await this.usersService.softDeleteMany(idArray);
       return {
         success: true,
-        message: 'Vô hiệu hóa người dùng thành công',
-        data: user,
+        message: 'Xóa mềm người dùng thành công',
       };
     } catch (error) {
       return {
         success: false,
-        message: (error as Error).message || 'Lỗi khi vô hiệu hóa người dùng',
-        data: null,
-      };
-    }
-  }
-
-  // ========== BULK OPERATIONS ==========
-
-  @Patch('bulk/status')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  async bulkUpdateStatus(@Body() bulkUpdateDto: BulkUpdateStatusDto) {
-    try {
-      const modifiedCount = await this.usersService.bulkUpdateStatus(
-        bulkUpdateDto.ids,
-        bulkUpdateDto.status,
-      );
-      return {
-        success: true,
-        message: `Cập nhật trạng thái ${modifiedCount} người dùng thành công`,
-        data: { modifiedCount },
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message: (error as Error).message || 'Lỗi khi cập nhật hàng loạt',
-        data: null,
-      };
-    }
-  }
-
-  @Delete('bulk')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  @HttpCode(HttpStatus.OK)
-  async bulkDelete(@Body() bulkDeleteDto: BulkDeleteDto) {
-    try {
-      const deletedCount = await this.usersService.bulkDelete(
-        bulkDeleteDto.ids,
-      );
-      return {
-        success: true,
-        message: `Xóa ${deletedCount} người dùng thành công`,
-        data: { deletedCount },
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message: (error as Error).message || 'Lỗi khi xóa hàng loạt',
-        data: null,
+        message: (error as Error).message || 'Lỗi khi xóa mềm người dùng',
       };
     }
   }

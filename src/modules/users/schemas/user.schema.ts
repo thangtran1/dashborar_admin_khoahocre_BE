@@ -82,9 +82,6 @@ export class User {
   @Prop()
   googleId?: string;
 
-  @Prop()
-  facebookId?: string;
-
   // Tracking fields
   @Prop({ default: Date.now })
   lastLoginAt?: Date;
@@ -95,11 +92,8 @@ export class User {
   @Prop({ default: true })
   isEmailVerified: boolean;
 
-  @Prop()
-  emailVerificationToken?: string;
-
-  @Prop()
-  emailVerificationExpiry?: Date;
+  @Prop({ default: false })
+  isDeleted: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
@@ -117,8 +111,6 @@ UserSchema.set('toJSON', {
     delete result.password;
     delete result.otp;
     delete result.otpExpiry;
-    delete result.emailVerificationToken;
-    delete result.emailVerificationExpiry;
     return result;
   },
 });
