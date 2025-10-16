@@ -43,12 +43,11 @@ export class GoogleOAuthService {
     };
 
     const accessToken = this.jwtService.sign(payload, {
-      expiresIn: this.configService.get<string>('JWT_EXPIRES_IN') || '7d',
+      expiresIn: '7d',
     });
 
     const refreshToken = this.jwtService.sign(payload, {
-      expiresIn:
-        this.configService.get<string>('JWT_REFRESH_EXPIRES_IN') || '30d',
+      expiresIn: '30d',
     });
 
     return {

@@ -289,6 +289,23 @@ export class UsersService {
     return result.matchedCount;
   }
 
+  // ========== RESTORE USER ==========
+
+  async restoreMany(ids: string[]): Promise<number> {
+    const result = await this.userModel
+      .updateMany(
+        { _id: { $in: ids }, isDeleted: true }, // chỉ restore user đã soft delete
+        { isDeleted: false, updatedAt: new Date() },
+      )
+      .exec();
+
+    if (result.matchedCount === 0) {
+      throw new NotFoundException('Không tìm thấy người dùng để khôi phục');
+    }
+
+    return result.matchedCount;
+  }
+
   // ========== UTILITY OPERATIONS ==========
 
   async updateLoginInfo(id: string): Promise<void> {

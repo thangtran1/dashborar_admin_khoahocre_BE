@@ -383,4 +383,27 @@ export class UsersController {
       };
     }
   }
+
+  @Patch('restore')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @HttpCode(HttpStatus.OK)
+  async restore(
+    @Body('ids') ids: string[] | string, // 1 hoặc nhiều id
+  ) {
+    try {
+      const idArray = Array.isArray(ids) ? ids : [ids];
+      const restoredCount = await this.usersService.restoreMany(idArray);
+
+      return {
+        success: true,
+        message: `Khôi phục thành công ${restoredCount} người dùng`,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: (error as Error).message || 'Lỗi khi khôi phục người dùng',
+      };
+    }
+  }
 }

@@ -67,12 +67,11 @@ export class AuthService {
     };
 
     const accessToken = this.jwtService.sign(payload, {
-      expiresIn: this.configService.get<string>('JWT_EXPIRES_IN') || '7d',
+      expiresIn: '7d',
     });
 
     const refreshToken = this.jwtService.sign(payload, {
-      expiresIn:
-        this.configService.get<string>('JWT_REFRESH_EXPIRES_IN') || '30d',
+      expiresIn: '30d',
     });
 
     return {
@@ -105,7 +104,7 @@ export class AuthService {
     await this.usersService.updateOtp(user.email, otp, otpExpiry);
 
     const payload = { id: user._id.toString() };
-    const token = this.jwtService.sign(payload, { expiresIn: '15m' });
+    const token = this.jwtService.sign(payload, { expiresIn: 900 });
 
     const resetLink = `http://localhost:3000/reset-password?token=${token}`;
 
@@ -163,7 +162,7 @@ export class AuthService {
     }
 
     const payload = { id: user._id.toString() };
-    const token = this.jwtService.sign(payload, { expiresIn: '15m' });
+    const token = this.jwtService.sign(payload, { expiresIn: 900 });
 
     return {
       success: true,

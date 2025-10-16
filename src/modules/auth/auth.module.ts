@@ -20,7 +20,7 @@ import { GoogleOAuthService } from './google-oauth.service';
           configService.get<string>('JWT_SECRET') ||
           'your_super_secret_jwt_key_here_change_in_production',
         signOptions: {
-          expiresIn: configService.get<string>('JWT_EXPIRES_IN') || '7d',
+          expiresIn: '7d',
         },
       }),
       inject: [ConfigService],
