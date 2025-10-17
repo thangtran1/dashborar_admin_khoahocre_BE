@@ -68,6 +68,7 @@ export class UsersService {
       status,
       sortBy = 'createdAt',
       sortOrder = 'desc',
+      isDeleted = false,
     } = queryDto;
     const skip = (page - 1) * limit;
 
@@ -88,6 +89,9 @@ export class UsersService {
     if (status) {
       filter.status = status;
     }
+
+    // Always filter by isDeleted status
+    filter.isDeleted = isDeleted;
 
     // Build sort object
     const sort: Record<string, 1 | -1> = {};

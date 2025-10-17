@@ -5,85 +5,76 @@ import {
   IsNumber,
   Min,
   Max,
+  IsBoolean,
   ValidateIf,
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 import { UserRole, UserStatus } from '../schemas/user.schema';
 
 export class QueryUserDto {
+  // --- Pagination ---
   @IsOptional()
-  @Transform(({ value }: { value: unknown }) => {
-    if (typeof value === 'string') {
-      const num = parseInt(value, 10);
-      return isNaN(num) || num < 1 ? 1 : num;
-    }
-    return typeof value === 'number' && value >= 1 ? value : 1;
-  })
   @Type(() => Number)
   @IsNumber({}, { message: 'Trang phải là số' })
   @Min(1, { message: 'Trang phải lớn hơn 0' })
-  page?: number = 1;
+  @Transform(({ value }: { value: unknown }) => {
+    const n = Number(value);
+    return isNaN(n) || n < 1 ? 1 : n;
+  })
+  page = 1;
 
   @IsOptional()
-  @Transform(({ value }: { value: unknown }) => {
-    if (typeof value === 'string') {
-      const num = parseInt(value, 10);
-      return isNaN(num) || num < 1 ? 10 : num > 100 ? 100 : num;
-    }
-    return typeof value === 'number' && value >= 1 && value <= 100 ? value : 10;
-  })
   @Type(() => Number)
   @IsNumber({}, { message: 'Số lượng phải là số' })
-  @Min(1, { message: 'Số lượng phải lớn hơn 0' })
-  @Max(100, { message: 'Số lượng không được vượt quá 100' })
-  limit?: number = 10;
-
-  @IsOptional()
-  @IsString({ message: 'Từ khóa tìm kiếm phải là chuỗi' })
+  @Min(1)
+  @Max(100)
   @Transform(({ value }: { value: unknown }) => {
-    if (typeof value === 'string') {
-      const trimmed = value.trim();
-      return trimmed === '' ? undefined : trimmed;
-    }
-    return value;
+    const n = Number(value);
+    return isNaN(n) ? 10 : Math.min(Math.max(n, 1), 100);
   })
+  limit = 10;
+
+  // --- Search ---
+  @IsOptional()
+  @IsString({ message: 'Từ khóa phải là chuỗi' })
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() || undefined : undefined,
+  )
   search?: string;
 
+  // --- Filters ---
   @IsOptional()
-  @ValidateIf(
-    (o, value) => value !== '' && value !== null && value !== undefined,
-  )
+  @ValidateIf((_, v) => v !== '' && v != null)
   @IsEnum(UserRole, { message: 'Vai trò không hợp lệ' })
   role?: UserRole;
 
   @IsOptional()
-  @ValidateIf(
-    (o, value) => value !== '' && value !== null && value !== undefined,
-  )
+  @ValidateIf((_, v) => v !== '' && v != null)
   @IsEnum(UserStatus, { message: 'Trạng thái không hợp lệ' })
   status?: UserStatus;
 
+  // --- Sorting ---
   @IsOptional()
-  @IsString({ message: 'Sắp xếp phải là chuỗi' })
-  @Transform(({ value }: { value: unknown }) => {
-    if (typeof value === 'string') {
-      const trimmed = value.trim();
-      return trimmed === '' ? 'createdAt' : trimmed;
-    }
-    return value || 'createdAt';
-  })
-  sortBy?: string = 'createdAt';
+  @IsString()
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' && value.trim() ? value.trim() : 'createdAt',
+  )
+  sortBy = 'createdAt';
 
   @IsOptional()
-  @IsString({ message: 'Thứ tự sắp xếp phải là chuỗi' })
-  @Transform(({ value }: { value: unknown }) => {
-    if (typeof value === 'string') {
-      const trimmed = value.toLowerCase().trim();
-      return trimmed === '' || !['asc', 'desc'].includes(trimmed)
-        ? 'desc'
-        : trimmed;
-    }
-    return 'desc';
-  })
-  sortOrder?: 'asc' | 'desc' = 'desc';
+  @IsString()
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' && ['asc', 'desc'].includes(value.toLowerCase())
+      ? value.toLowerCase()
+      : 'desc',
+  )
+  sortOrder: 'asc' | 'desc' = 'desc';
+
+  // --- Deleted filter ---
+  @IsOptional()
+  @IsBoolean({ message: 'isDeleted must be a boolean value' })
+  @Transform(({ value }: { value: unknown }) =>
+    ['true', '1', true, 1].includes(value as string | number | boolean),
+  )
+  isDeleted = false;
 }
