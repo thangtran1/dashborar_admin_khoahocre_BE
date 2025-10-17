@@ -7,6 +7,14 @@ import {
 } from './schemas/notification.schema';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 
+interface FindAllForAdminOptions {
+  limit?: number;
+  page?: number;
+  search?: string;
+  type?: string;
+  startDate?: string;
+  endDate?: string;
+}
 @Injectable()
 export class NotificationsService {
   constructor(
@@ -99,29 +107,51 @@ export class NotificationsService {
   }
 
   // Admin methods
-  async findAllForAdmin(
-    limit: number = 20,
-    page: number = 1,
-  ): Promise<{
-    success: boolean;
-    message: string;
-    data: {
-      notifications: Notification[];
-      total: number;
-      page: number;
-      limit: number;
-    };
-  }> {
+  async findAllForAdmin(options: FindAllForAdminOptions) {
+    const {
+      limit = 20,
+      page = 1,
+      search,
+      type = 'system',
+      startDate,
+      endDate,
+    } = options;
+
     const skip = (page - 1) * limit;
+
+    // --- Build query object ---
+    const query: Record<string, any> = {};
+
+    // Filter by type
+    if (type) {
+      query.type = type;
+    }
+
+    // Filter by search in title or content
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: 'i' } }, // i = case insensitive
+        { content: { $regex: search, $options: 'i' } },
+      ];
+    }
+
+    // Filter by date range
+    if (startDate || endDate) {
+      query.createdAt = {};
+      if (startDate)
+        (query.createdAt as Record<string, any>).$gte = new Date(startDate);
+      if (endDate)
+        (query.createdAt as Record<string, any>).$lte = new Date(endDate);
+    }
 
     const [notifications, total] = await Promise.all([
       this.notificationModel
-        .find({ type: 'system' })
+        .find(query)
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
         .exec(),
-      this.notificationModel.countDocuments({ type: 'system' }),
+      this.notificationModel.countDocuments(query),
     ]);
 
     return {
