@@ -3,6 +3,12 @@ import { Document } from 'mongoose';
 
 export type NotificationDocument = Notification & Document;
 
+export enum NotificationType {
+  SYSTEM = 'system',
+  PROMOTION = 'promotion',
+  MAINTENANCE = 'maintenance',
+  UPDATE = 'update',
+}
 @Schema({ timestamps: true })
 export class Notification {
   @Prop({ required: true })
@@ -12,10 +18,7 @@ export class Notification {
   content: string;
 
   @Prop({ required: true })
-  shortDescription: string;
-
-  @Prop({ default: 'system' })
-  type: string; // 'system' cho thông báo hệ thống
+  type: NotificationType;
 
   @Prop()
   actionUrl?: string;

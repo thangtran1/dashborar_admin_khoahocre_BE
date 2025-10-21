@@ -4,7 +4,7 @@ export const templateHtml = (resetLink: string, otp: string) => `
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🔐 Reset Password - KhoaHocRe</title>
+  <title>🔐 Reset Password - TVT-Admin</title>
   <style>
     body { margin:0; padding:20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #667eea; }
     .container { max-width:500px; margin:0 auto; background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 20px 40px rgba(0,0,0,0.1); }
@@ -49,7 +49,7 @@ export const templateHtml = (resetLink: string, otp: string) => `
 <body>
   <div class="container">
     <div class="header">
-      <div class="logo">🎓 Chia sẻ kiến thức quý giá</div>
+      <div class="logo">🎓 TVT-Admin - Quản lý hệ thống</div>
     </div>
 
     <div class="content">
@@ -98,7 +98,7 @@ export const templateHtml = (resetLink: string, otp: string) => `
     </div>
 
     <div class="footer">
-      <div class="footer-text">Email tự động từ KhoaHocRe</div>
+      <div class="footer-text">Email tự động từ TVT-Admin</div>
     </div>
   </div>
 </body>

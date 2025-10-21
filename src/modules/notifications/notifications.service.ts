@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import {
   Notification,
   NotificationDocument,
+  NotificationType,
 } from './schemas/notification.schema';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 
@@ -11,7 +12,7 @@ interface FindAllForAdminOptions {
   limit?: number;
   page?: number;
   search?: string;
-  type?: string;
+  type?: NotificationType;
   startDate?: string;
   endDate?: string;
 }
@@ -27,7 +28,7 @@ export class NotificationsService {
   ): Promise<{ success: boolean; message: string; data: Notification }> {
     const notification = new this.notificationModel({
       ...createNotificationDto,
-      type: 'system',
+      type: createNotificationDto.type || NotificationType.SYSTEM,
     });
 
     const savedNotification = await notification.save();
@@ -57,12 +58,12 @@ export class NotificationsService {
 
     const [notifications, total] = await Promise.all([
       this.notificationModel
-        .find({ type: 'system' })
+        .find({})
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
         .exec(),
-      this.notificationModel.countDocuments({ type: 'system' }),
+      this.notificationModel.countDocuments({}),
     ]);
 
     const notificationsWithReadStatus = notifications.map((notification) => ({
@@ -96,10 +97,11 @@ export class NotificationsService {
 
   async getUnreadCount(
     userId: string,
+    type?: NotificationType,
   ): Promise<{ success: boolean; message: string; unreadCount: number }> {
     // Đếm số thông báo hệ thống mà user chưa đọc
     const count = await this.notificationModel.countDocuments({
-      type: 'system',
+      type,
       readByUsers: { $nin: [userId] }, // Chưa có userId trong readByUsers
     });
 
@@ -108,14 +110,7 @@ export class NotificationsService {
 
   // Admin methods
   async findAllForAdmin(options: FindAllForAdminOptions) {
-    const {
-      limit = 20,
-      page = 1,
-      search,
-      type = 'system',
-      startDate,
-      endDate,
-    } = options;
+    const { limit = 20, page = 1, search, type, startDate, endDate } = options;
 
     const skip = (page - 1) * limit;
 

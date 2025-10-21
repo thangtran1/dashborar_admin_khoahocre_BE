@@ -15,6 +15,7 @@ import {
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { NotificationType } from './schemas/notification.schema';
 
 export interface RequestWithUser extends Request {
   user: {
@@ -46,7 +47,7 @@ export class NotificationsController {
     @Query('limit') limit?: string,
     @Query('page') page?: string,
     @Query('search') search?: string,
-    @Query('type') type?: string,
+    @Query('type') type?: NotificationType,
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
   ) {
@@ -109,7 +110,6 @@ export class NotificationsController {
     @Query('limit') limit?: string,
     @Query('page') page?: string,
   ) {
-    // User lấy thông báo với thông tin đã đọc chưa
     return await this.notificationsService.findAll(
       req.user.id,
       limit ? parseInt(limit) : 20,

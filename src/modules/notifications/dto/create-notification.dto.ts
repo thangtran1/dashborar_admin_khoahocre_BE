@@ -1,4 +1,5 @@
-import { IsString, IsOptional, IsUrl } from 'class-validator';
+import { IsString, IsUrl, IsEnum } from 'class-validator';
+import { NotificationType } from '../schemas/notification.schema';
 
 export class CreateNotificationDto {
   @IsString()
@@ -7,13 +8,9 @@ export class CreateNotificationDto {
   @IsString()
   content: string;
 
-  @IsString()
-  shortDescription: string;
-
   @IsUrl()
   actionUrl?: string;
 
-  @IsOptional()
-  @IsString()
-  type?: string;
+  @IsEnum(NotificationType)
+  type: NotificationType;
 }
