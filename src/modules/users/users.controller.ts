@@ -20,6 +20,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { UsersService } from './users.service';
+import { AuthService } from '../auth/auth.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -37,7 +38,10 @@ import { UserRole } from './schemas/user.schema';
 
 @Controller('user')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly authService: AuthService,
+  ) {}
 
   // ========== PUBLIC ENDPOINTS ==========
 
@@ -192,11 +196,26 @@ export class UsersController {
   @Roles(UserRole.ADMIN)
   async create(@Body() createUserDto: CreateUserDto) {
     try {
+      const temporaryPassword = createUserDto.password;
       const user = await this.usersService.create(createUserDto);
+
+      // Send welcome email with account information
+      const emailResult = await this.authService.sendNewUserNotification(
+        user.email,
+        user.name,
+        temporaryPassword,
+        (user as any).createdAt,
+      );
+
+      const message = emailResult.success
+        ? 'Tạo người dùng thành công và đã gửi email thông báo'
+        : 'Tạo người dùng thành công nhưng không thể gửi email thông báo';
+
       return {
         success: true,
-        message: 'Tạo người dùng thành công',
+        message,
         data: user,
+        emailSent: emailResult.success,
       };
     } catch (error) {
       return {

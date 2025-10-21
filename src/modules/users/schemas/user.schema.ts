@@ -1,7 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
-export type UserDocument = User & Document & { _id: Types.ObjectId };
+export type UserDocument = User &
+  Document & { _id: Types.ObjectId; createdAt: Date };
 
 export enum UserRole {
   USER = 'user',

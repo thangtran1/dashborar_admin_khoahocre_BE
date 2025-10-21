@@ -77,4 +77,12 @@ export class QueryUserDto {
     ['true', '1', true, 1].includes(value as string | number | boolean),
   )
   isDeleted = false;
+
+  // --- New users filter ---
+  @IsOptional()
+  @IsBoolean({ message: 'isNewUsers must be a boolean value' })
+  @Transform(({ value }: { value: unknown }) =>
+    ['true', '1', true, 1].includes(value as string | number | boolean),
+  )
+  isNewUsers = false;
 }

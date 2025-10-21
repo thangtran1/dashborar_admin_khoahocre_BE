@@ -15,6 +15,7 @@ import { JwtPayload } from '../../common/interfaces/jwt-payload.interface';
 import * as nodemailer from 'nodemailer';
 import { LoginDto } from './dto/login.dto';
 import { templateHtml } from 'src/templates/reset-password-form';
+import { newUserNotificationTemplate } from 'src/templates/new-user-notification';
 import { GoogleOAuthService } from './google-oauth.service';
 import { GoogleUser } from 'src/types/entity';
 
@@ -192,6 +193,77 @@ export class AuthService {
 
   async googleLogin(googleUser: GoogleUser) {
     return this.googleOAuthService.handleGoogleLogin(googleUser);
+  }
+
+  async sendNewUserNotification(
+    userEmail: string,
+    userName: string,
+    temporaryPassword: string,
+    createdAt?: Date,
+  ) {
+    try {
+      const loginUrl = `${this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000'}/login`;
+
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: this.configService.get<string>('GMAIL_USER'),
+          pass: this.configService.get<string>('GMAIL_PASS'),
+        },
+      });
+
+      // Format created date
+      const formattedCreatedAt = createdAt
+        ? new Date(createdAt).toLocaleString('vi-VN', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            timeZone: 'Asia/Ho_Chi_Minh',
+          })
+        : new Date().toLocaleString('vi-VN', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            timeZone: 'Asia/Ho_Chi_Minh',
+          });
+
+      const html = newUserNotificationTemplate(
+        userName,
+        userEmail,
+        temporaryPassword,
+        loginUrl,
+        formattedCreatedAt,
+      );
+
+      const mailOptions = {
+        from: this.configService.get<string>('GMAIL_USER'),
+        to: userEmail,
+        subject: 'Chào mừng bạn đến với hệ thống - Thông tin tài khoản mới',
+        html: html,
+      };
+
+      await transporter.sendMail(mailOptions);
+      console.log('✅ Email sent successfully to:', userEmail);
+
+      return {
+        success: true,
+        message: 'Đã gửi email thông báo tạo tài khoản thành công.',
+      };
+    } catch (error) {
+      console.error('❌ Email sending failed:', error);
+      // Don't throw error to prevent user creation from failing
+      return {
+        success: false,
+        message: 'Không thể gửi email thông báo.',
+        error: (error as Error).message,
+      };
+    }
   }
 
   logout() {

@@ -69,6 +69,7 @@ export class UsersService {
       sortBy = 'createdAt',
       sortOrder = 'desc',
       isDeleted = false,
+      isNewUsers = false,
     } = queryDto;
     const skip = (page - 1) * limit;
 
@@ -92,6 +93,13 @@ export class UsersService {
 
     // Always filter by isDeleted status
     filter.isDeleted = isDeleted;
+
+    // Filter for new users (created in the last 3 days)
+    if (isNewUsers) {
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 3);
+      filter.createdAt = { $gte: sevenDaysAgo };
+    }
 
     // Build sort object
     const sort: Record<string, 1 | -1> = {};
