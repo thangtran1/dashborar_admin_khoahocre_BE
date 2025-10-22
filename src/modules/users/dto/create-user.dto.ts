@@ -10,6 +10,7 @@ import {
   IsDateString,
 } from 'class-validator';
 import { UserRole, UserStatus } from '../schemas/user.schema';
+import { Transform } from 'class-transformer';
 
 export class CreateUserDto {
   @IsEmail({}, { message: 'Email không hợp lệ' })
@@ -40,6 +41,9 @@ export class CreateUserDto {
   avatar?: string;
 
   @IsOptional()
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() || undefined : undefined,
+  )
   @IsPhoneNumber('VN', { message: 'Số điện thoại không hợp lệ' })
   phone?: string;
 

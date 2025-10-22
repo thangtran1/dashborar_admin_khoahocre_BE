@@ -167,7 +167,7 @@ export const newUserNotificationTemplate = (
                 <!-- Logo row -->
                 <tr>
                     <td style='padding: 16px 0'>
-                    <img src='  ' alt='AZISX Logo' width='161' height='31' style='display: block' />
+                    <img src='  ' alt='TVT-Admin Logo' width='161' height='31' style='display: block' />
                     </td>
                 </tr>
 

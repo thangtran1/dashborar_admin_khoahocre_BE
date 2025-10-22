@@ -204,7 +204,7 @@ export class UsersController {
         user.email,
         user.name,
         temporaryPassword,
-        (user as any).createdAt,
+        new Date(user.createdAt as unknown as string),
       );
 
       const message = emailResult.success
