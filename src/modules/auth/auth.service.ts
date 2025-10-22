@@ -249,7 +249,6 @@ export class AuthService {
       };
 
       await transporter.sendMail(mailOptions);
-      console.log('✅ Email sent successfully to:', userEmail);
 
       return {
         success: true,

@@ -226,6 +226,59 @@ export class UsersController {
     }
   }
 
+  @Post('bulk-create')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './public/uploads/temp',
+        filename: (req, file, cb) => {
+          const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+          cb(null, `users-${uniqueSuffix}${extname(file.originalname)}`);
+        },
+      }),
+      fileFilter: (req, file, cb) => {
+        const allowed = /\.(xlsx|xls)$/i.test(file.originalname);
+        if (allowed) {
+          cb(null, true);
+        } else {
+          cb(
+            new BadRequestException('Chỉ chấp nhận file Excel (.xlsx, .xls)'),
+            false,
+          );
+        }
+      },
+      limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+    }),
+  )
+  async bulkCreateUsers(@UploadedFile() file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('Không có file được upload');
+    }
+
+    try {
+      const result = await this.usersService.bulkCreateFromExcel(file.path);
+
+      return {
+        success: true,
+        message: `Tạo thành công ${result.successCount} người dùng`,
+        data: {
+          successCount: result.successCount,
+          errorCount: result.errorCount,
+          errors: result.errors,
+          createdUsers: result.createdUsers,
+        },
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: (error as Error).message || 'Lỗi khi tạo người dùng từ Excel',
+        data: null,
+      };
+    }
+  }
+
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.MODERATOR)

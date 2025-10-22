@@ -3,10 +3,13 @@ import {
   ConflictException,
   NotFoundException,
   UnauthorizedException,
+  BadRequestException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
+import * as XLSX from 'xlsx';
+import * as fs from 'fs';
 import {
   User,
   UserDocument,
@@ -21,6 +24,7 @@ import {
   UpdateUserStatusDto,
 } from './dto/update-user.dto';
 import { QueryUserDto } from './dto/query-user.dto';
+import { BulkCreateUser } from 'src/types/entity';
 
 @Injectable()
 export class UsersService {
@@ -410,5 +414,203 @@ export class UsersService {
       moderators,
       newUsersThisMonth,
     };
+  }
+
+  // ========== Tạo nhiều người dùng cùng lúc từ file Excel ==========
+  async bulkCreateFromExcel(filePath: string): Promise<{
+    successCount: number;
+    errorCount: number;
+    errors: Array<{ row: number; email: string; error: string }>;
+    createdUsers: UserDocument[];
+  }> {
+    try {
+      const workbook = XLSX.readFile(filePath);
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const data = XLSX.utils.sheet_to_json(worksheet);
+
+      fs.unlinkSync(filePath);
+
+      if (!data || data.length === 0) {
+        throw new BadRequestException('File Excel không có dữ liệu');
+      }
+
+      const results = {
+        successCount: 0,
+        errorCount: 0,
+        errors: [] as Array<{ row: number; email: string; error: string }>,
+        createdUsers: [] as UserDocument[],
+      };
+
+      // BƯỚC 1: Validate tất cả users trước (không tạo gì cả)
+      const validatedUsers: Array<{
+        row: number;
+        data: CreateUserDto;
+        hashedPassword: string;
+      }> = [];
+
+      for (let i = 0; i < data.length; i++) {
+        const row = data[i] as BulkCreateUser;
+        const rowNumber = i + 2;
+
+        try {
+          // Validate required fields
+          if (!row.name || !row.email || !row.password) {
+            results.errors.push({
+              row: rowNumber,
+              email: row.email || 'N/A',
+              error: 'Thiếu thông tin bắt buộc (name, email, password)',
+            });
+            results.errorCount++;
+            continue;
+          }
+
+          // Validate email format
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(row.email)) {
+            results.errors.push({
+              row: rowNumber,
+              email: row.email,
+              error: 'Email không hợp lệ',
+            });
+            results.errorCount++;
+            continue;
+          }
+
+          // Check if email already exists
+          const existingUser = await this.userModel
+            .findOne({ email: row.email.trim().toLowerCase() })
+            .exec();
+
+          if (existingUser) {
+            results.errors.push({
+              row: rowNumber,
+              email: row.email,
+              error: 'Email đã tồn tại trong hệ thống',
+            });
+            results.errorCount++;
+            continue;
+          }
+
+          // Validate role
+          const validRoles = Object.values(UserRole);
+          const role = row.role || UserRole.USER;
+          if (!validRoles.includes(role)) {
+            results.errors.push({
+              row: rowNumber,
+              email: row.email,
+              error: `Vai trò không hợp lệ. Chỉ chấp nhận: ${validRoles.join(', ')}`,
+            });
+            results.errorCount++;
+            continue;
+          }
+
+          // Validate status
+          const validStatuses = Object.values(UserStatus);
+          const status = row.status || UserStatus.ACTIVE;
+          if (!validStatuses.includes(status)) {
+            results.errors.push({
+              row: rowNumber,
+              email: row.email,
+              error: `Trạng thái không hợp lệ. Chỉ chấp nhận: ${validStatuses.join(', ')}`,
+            });
+            results.errorCount++;
+            continue;
+          }
+
+          // Validate password length
+          if (row.password.length < 6) {
+            results.errors.push({
+              row: rowNumber,
+              email: row.email,
+              error: 'Mật khẩu phải có ít nhất 6 ký tự',
+            });
+            results.errorCount++;
+            continue;
+          }
+
+          // Check for duplicate emails within the Excel file
+          const duplicateInFile = validatedUsers.find(
+            (u) => u.data.email === row.email.trim().toLowerCase(),
+          );
+          if (duplicateInFile) {
+            results.errors.push({
+              row: rowNumber,
+              email: row.email,
+              error: `Email trùng lặp trong file (dòng ${duplicateInFile.row})`,
+            });
+            results.errorCount++;
+            continue;
+          }
+
+          // Prepare user data
+          const hashedPassword = await bcrypt.hash(row.password, 12);
+          const createUserDto: CreateUserDto = {
+            name: row.name.trim(),
+            email: row.email.trim().toLowerCase(),
+            password: row.password,
+            role: role,
+            status: status,
+            phone: row.phone || '',
+            address: row.address || '',
+            bio: row.bio || '',
+          };
+
+          validatedUsers.push({
+            row: rowNumber,
+            data: createUserDto,
+            hashedPassword,
+          });
+        } catch (error) {
+          results.errors.push({
+            row: rowNumber,
+            email: row.email || 'N/A',
+            error: (error as Error).message || 'Lỗi không xác định',
+          });
+          results.errorCount++;
+        }
+      }
+
+      // BƯỚC 2: Kiểm tra - nếu có lỗi thì KHÔNG tạo user nào cả
+      if (results.errorCount > 0) {
+        return results; // Trả về kết quả với lỗi, không tạo user nào
+      }
+
+      // BƯỚC 3: Chỉ khi TẤT CẢ hợp lệ thì mới tạo users
+      for (const validatedUser of validatedUsers) {
+        try {
+          const user = new this.userModel({
+            ...validatedUser.data,
+            password: validatedUser.hashedPassword,
+            loginCount: 0,
+            isEmailVerified: false,
+          });
+
+          const savedUser = await user.save();
+          results.createdUsers.push(savedUser);
+          results.successCount++;
+        } catch {
+          // Nếu có lỗi khi tạo, rollback tất cả users đã tạo
+          if (results.createdUsers.length > 0) {
+            const createdIds = results.createdUsers.map((u) => u._id as string);
+            await this.userModel.deleteMany({ _id: { $in: createdIds } });
+          }
+
+          throw new Error(
+            `Lỗi khi tạo user ở dòng ${validatedUser.row}. Đã rollback tất cả thay đổi.`,
+          );
+        }
+      }
+
+      return results;
+    } catch (error) {
+      throw new BadRequestException(
+        (error as Error).message || 'Lỗi khi xử lý file Excel',
+      );
+    } finally {
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    }
   }
 }
