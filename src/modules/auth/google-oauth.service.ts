@@ -1,17 +1,16 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
 import { RegisterDto } from './dto/register.dto';
 import { JwtPayload } from '../../common/interfaces/jwt-payload.interface';
 import { GoogleUser } from 'src/types/entity';
+import { CreateUserDto } from '../users/dto/create-user.dto';
 
 @Injectable()
 export class GoogleOAuthService {
   constructor(
-    private usersService: UsersService,
-    private jwtService: JwtService,
-    private configService: ConfigService,
+    private readonly usersService: UsersService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async handleGoogleLogin(googleUser: GoogleUser) {
@@ -30,14 +29,16 @@ export class GoogleOAuthService {
         name: googleUser.name || googleUser.email.split('@')[0],
         password: tempPassword,
         confirmPassword: tempPassword,
+        provider: 'google',
+        providerId: googleUser.googleId,
       };
 
-      user = await this.usersService.create(registerDto);
+      user = await this.usersService.create(registerDto as CreateUserDto);
     }
 
     // Tạo JWT tokens
     const payload: JwtPayload = {
-      sub: user._id.toString(),
+      sub: user._id as string,
       email: user.email,
       role: user.role,
     };
@@ -56,7 +57,7 @@ export class GoogleOAuthService {
       accessToken,
       refreshToken,
       user: {
-        id: user._id.toString(),
+        id: user._id as string,
         email: user.email,
         username: user.name,
         avatar: googleUser.avatar || null,

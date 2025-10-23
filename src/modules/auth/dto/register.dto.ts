@@ -40,4 +40,13 @@ export class RegisterDto {
   @IsNotEmpty({ message: 'Mật khẩu xác nhận là bắt buộc' })
   @Validate(ConfirmPasswordValidator, ['password'])
   confirmPassword: string;
+
+  @IsString({ message: 'Role phải là chuỗi' })
+  role?: string = 'user'; // Mặc định là 'user' nếu không được cung cấp
+
+  @IsString()
+  provider?: string; // 'local', 'google', 'github', etc.
+
+  @IsString()
+  providerId?: string; // ID từ provider (Google ID, GitHub ID, etc.)
 }

@@ -8,6 +8,8 @@ import { UsersModule } from '../users/users.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { GoogleOAuthService } from './google-oauth.service';
+import { GitHubController } from './github.controller';
+import { GitHubOAuthService } from './github-oauth.service';
 
 @Module({
   imports: [
@@ -26,8 +28,14 @@ import { GoogleOAuthService } from './google-oauth.service';
       inject: [ConfigService],
     }),
   ],
-  controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, GoogleStrategy, GoogleOAuthService],
+  controllers: [AuthController, GitHubController],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    GoogleStrategy,
+    GoogleOAuthService,
+    GitHubOAuthService,
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}

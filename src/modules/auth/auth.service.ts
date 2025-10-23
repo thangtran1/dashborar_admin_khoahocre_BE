@@ -18,6 +18,7 @@ import { templateHtml } from 'src/templates/reset-password-form';
 import { newUserNotificationTemplate } from 'src/templates/new-user-notification';
 import { GoogleOAuthService } from './google-oauth.service';
 import { GoogleUser } from 'src/types/entity';
+import { CreateUserDto } from '../users/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -29,13 +30,15 @@ export class AuthService {
   ) {}
 
   async register(registerDto: RegisterDto) {
-    const user: UserDocument = await this.usersService.create(registerDto);
+    const user: UserDocument = await this.usersService.create(
+      registerDto as CreateUserDto,
+    );
 
     return {
       message: 'Đăng ký thành công.',
       success: true,
       user: {
-        id: user._id.toString(),
+        id: user._id as string,
         email: user.email,
         name: user.name,
         role: user.role,
@@ -62,7 +65,7 @@ export class AuthService {
     }
 
     const payload: JwtPayload = {
-      sub: user._id.toString(),
+      sub: user._id as string,
       email: user.email,
       role: user.role,
     };
@@ -81,7 +84,7 @@ export class AuthService {
       accessToken,
       refreshToken,
       user: {
-        id: user._id.toString(),
+        id: user._id as string,
         email: user.email,
         username: user.name,
         avatar: null,
@@ -104,7 +107,7 @@ export class AuthService {
 
     await this.usersService.updateOtp(user.email, otp, otpExpiry);
 
-    const payload = { id: user._id.toString() };
+    const payload = { id: user._id as string };
     const token = this.jwtService.sign(payload, { expiresIn: 900 });
 
     const resetLink = `http://localhost:3000/reset-password?token=${token}`;
@@ -162,7 +165,7 @@ export class AuthService {
       );
     }
 
-    const payload = { id: user._id.toString() };
+    const payload = { id: user._id as string };
     const token = this.jwtService.sign(payload, { expiresIn: 900 });
 
     return {
