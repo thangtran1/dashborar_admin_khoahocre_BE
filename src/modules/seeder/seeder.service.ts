@@ -6,6 +6,7 @@ import { User, UserDocument } from '../users/schemas/user.schema';
 import { BannerSeeder } from '../banner/banner.seeder';
 import { UsersSeeder } from '../users/users.seeder';
 import { SystemSeeder } from '../system/system.seeder';
+import { MaintenanceSeeder } from '../maintenance/maintenance.seeder';
 
 @Injectable()
 export class SeederService {
@@ -16,6 +17,7 @@ export class SeederService {
     private bannerSeeder: BannerSeeder,
     private usersSeeder: UsersSeeder,
     private systemSeeder: SystemSeeder,
+    private maintenanceSeeder: MaintenanceSeeder,
   ) {}
 
   async seedAll(): Promise<void> {
@@ -25,6 +27,7 @@ export class SeederService {
       await this.seedUsers();
       await this.bannerSeeder.seed();
       await this.systemSeeder.seed();
+      await this.maintenanceSeeder.seed();
 
       this.logger.log('Hoàn thành seed dữ liệu!');
     } catch (error) {
@@ -40,6 +43,7 @@ export class SeederService {
       await this.userModel.deleteMany({});
       await this.bannerSeeder.clear();
       await this.systemSeeder.clear();
+      await this.maintenanceSeeder.clear();
 
       this.logger.log('Hoàn thành xóa dữ liệu!');
     } catch (error) {

@@ -6,6 +6,7 @@ import { SeederController } from './seeder.controller';
 import { BannerModule } from '../banner/banner.module';
 import { UsersModule } from '../users/users.module';
 import { SystemModule } from '../system/system.module';
+import { MaintenanceModule } from '../maintenance/maintenance.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { SystemModule } from '../system/system.module';
     BannerModule,
     UsersModule,
     SystemModule,
+    MaintenanceModule,
   ],
   controllers: [SeederController],
   providers: [SeederService],

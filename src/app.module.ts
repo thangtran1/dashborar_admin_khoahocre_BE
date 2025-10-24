@@ -11,6 +11,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import { BannerModule } from './modules/banner/banner.module';
 import { SystemModule } from './modules/system/system.module';
 import { DatabaseModule } from './modules/database/database.module';
+import { MaintenanceModule } from './modules/maintenance/maintenance.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { DatabaseModule } from './modules/database/database.module';
     BannerModule,
     SystemModule,
     DatabaseModule,
+    MaintenanceModule,
   ],
 
   controllers: [AppController],
