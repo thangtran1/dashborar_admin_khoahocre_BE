@@ -194,27 +194,21 @@ export class MaintenanceService {
     };
   }
 
-  async remove(id: string) {
-    const maintenance = await this.findOne(id);
-
-    if (maintenance.data.status === MaintenanceStatus.IN_PROGRESS) {
-      throw new BadRequestException('Không thể xóa bảo trì đang diễn ra');
-    }
+  async remove(ids: string | string[]) {
+    const idsArray = Array.isArray(ids) ? ids : [ids];
+  
+    const maintenances = await this.maintenanceModel.find({ _id: { $in: idsArray } });
+  
     if (
-      ![MaintenanceStatus.SCHEDULED, MaintenanceStatus.COMPLETED].includes(
-        maintenance.data.status,
+      maintenances.some(
+        m => ![MaintenanceStatus.SCHEDULED, MaintenanceStatus.COMPLETED, MaintenanceStatus.CANCELLED].includes(m.status)
       )
     ) {
-      throw new BadRequestException(
-        'Chỉ có thể xóa bảo trì đã lên lịch hoặc đã hoàn thành',
-      );
+      throw new BadRequestException('Chỉ có thể xóa bảo trì đã lên lịch, đã hoàn thành hoặc đã hủy');
     }
-
-    await this.maintenanceModel.findByIdAndDelete(id);
-    return {
-      success: true,
-      message: 'Xóa bảo trì thành công',
-    };
+  
+    await this.maintenanceModel.deleteMany({ _id: { $in: idsArray } });
+    return { success: true, message: 'Xóa bảo trì thành công' };
   }
 
   async startNow(id: string) {
@@ -286,48 +280,6 @@ export class MaintenanceService {
     };
   }
 
-  async getStats() {
-    const stats = await this.maintenanceModel.aggregate([
-      {
-        $group: {
-          _id: null,
-          total: { $sum: 1 },
-          scheduled: {
-            $sum: {
-              $cond: [{ $eq: ['$status', MaintenanceStatus.SCHEDULED] }, 1, 0],
-            },
-          },
-          inProgress: {
-            $sum: {
-              $cond: [
-                { $eq: ['$status', MaintenanceStatus.IN_PROGRESS] },
-                1,
-                0,
-              ],
-            },
-          },
-          completed: {
-            $sum: {
-              $cond: [{ $eq: ['$status', MaintenanceStatus.COMPLETED] }, 1, 0],
-            },
-          },
-          cancelled: {
-            $sum: {
-              $cond: [{ $eq: ['$status', MaintenanceStatus.CANCELLED] }, 1, 0],
-            },
-          },
-          avgDuration: { $avg: '$duration' },
-        },
-      },
-    ]);
-
-    return {
-      success: true,
-      message: 'Lấy thống kê bảo trì thành công',
-      data: stats,
-    };
-  }
-
   async getCurrentStatus() {
     const activeMaintenance = await this.maintenanceModel.findOne({
       isActive: true,
@@ -339,30 +291,6 @@ export class MaintenanceService {
       data: {
         isUnderMaintenance: !!activeMaintenance,
         maintenance: activeMaintenance,
-      },
-    };
-  }
-
-  async getUpcoming() {
-    const now = new Date();
-    const next24h = new Date(now.getTime() + 48 * 60 * 60 * 1000);
-
-    const items = await this.maintenanceModel
-      .find({
-        status: MaintenanceStatus.SCHEDULED,
-        startTime: { $gte: now, $lte: next24h },
-      })
-      .sort({ startTime: 1 });
-
-    return {
-      success: true,
-      message: 'Lấy danh sách bảo trì sắp tới trong 48h thành công',
-      data: items,
-      pagination: {
-        total: items.length,
-        page: 1,
-        limit: items.length,
-        totalPages: 1,
       },
     };
   }

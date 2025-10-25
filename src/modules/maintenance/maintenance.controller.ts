@@ -39,18 +39,6 @@ export class MaintenanceController {
     return this.maintenanceService.getCurrentStatus();
   }
 
-  @Get('upcoming')
-  @ApiOperation({ summary: 'Lấy danh sách bảo trì sắp tới trong 48h' })
-  getUpcoming() {
-    return this.maintenanceService.getUpcoming();
-  }
-
-  @Get('stats')
-  @ApiOperation({ summary: 'Thống kê bảo trì' })
-  getStats() {
-    return this.maintenanceService.getStats();
-  }
-
   @Get(':id')
   @ApiOperation({ summary: 'Lấy chi tiết bảo trì theo ID' })
   findOne(@Param('id') id: string) {
@@ -66,10 +54,10 @@ export class MaintenanceController {
     return this.maintenanceService.update(id, updateMaintenanceDto);
   }
 
-  @Delete(':id')
+  @Delete()
   @ApiOperation({ summary: 'Xóa bảo trì' })
-  remove(@Param('id') id: string) {
-    return this.maintenanceService.remove(id);
+  remove(@Body('ids') ids: string | string[]) {
+    return this.maintenanceService.remove(ids);
   }
 
   @Post(':id/start')
