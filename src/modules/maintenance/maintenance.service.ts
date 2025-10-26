@@ -134,14 +134,10 @@ export class MaintenanceService {
   async update(id: string, updateMaintenanceDto: UpdateMaintenanceDto) {
     const maintenance = await this.findOne(id);
 
-    if (maintenance.data.status === MaintenanceStatus.IN_PROGRESS) {
-      throw new BadRequestException('Không thể cập nhật bảo trì đang diễn ra');
-    }
-    if (maintenance.data.status === MaintenanceStatus.COMPLETED) {
-      throw new BadRequestException('Không thể cập nhật bảo trì đã hoàn thành');
-    }
-    if (maintenance.data.status === MaintenanceStatus.CANCELLED) {
-      throw new BadRequestException('Không thể cập nhật bảo trì đã hủy');
+    if (maintenance.data.status !== MaintenanceStatus.SCHEDULED) {
+      throw new BadRequestException(
+        'Chỉ có thể cập nhật lịch bảo trì ở trạng thái Lên lịch',
+      );
     }
 
     if (updateMaintenanceDto.startTime) {
@@ -196,17 +192,26 @@ export class MaintenanceService {
 
   async remove(ids: string | string[]) {
     const idsArray = Array.isArray(ids) ? ids : [ids];
-  
-    const maintenances = await this.maintenanceModel.find({ _id: { $in: idsArray } });
-  
+
+    const maintenances = await this.maintenanceModel.find({
+      _id: { $in: idsArray },
+    });
+
     if (
       maintenances.some(
-        m => ![MaintenanceStatus.SCHEDULED, MaintenanceStatus.COMPLETED, MaintenanceStatus.CANCELLED].includes(m.status)
+        (m) =>
+          ![
+            MaintenanceStatus.SCHEDULED,
+            MaintenanceStatus.COMPLETED,
+            MaintenanceStatus.CANCELLED,
+          ].includes(m.status),
       )
     ) {
-      throw new BadRequestException('Chỉ có thể xóa bảo trì đã lên lịch, đã hoàn thành hoặc đã hủy');
+      throw new BadRequestException(
+        'Chỉ có thể xóa bảo trì đã lên lịch, đã hoàn thành hoặc đã hủy',
+      );
     }
-  
+
     await this.maintenanceModel.deleteMany({ _id: { $in: idsArray } });
     return { success: true, message: 'Xóa bảo trì thành công' };
   }
