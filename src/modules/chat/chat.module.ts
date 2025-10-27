@@ -20,9 +20,7 @@ import {
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        secret:
-          configService.get<string>('JWT_SECRET') ||
-          'your-super-secret-jwt-key-here',
+        secret: configService.get<string>('JWT_SECRET'),
         signOptions: {
           expiresIn: '7d',
         },

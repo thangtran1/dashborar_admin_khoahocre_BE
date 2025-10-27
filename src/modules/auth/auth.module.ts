@@ -18,9 +18,7 @@ import { GitHubOAuthService } from './github-oauth.service';
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        secret:
-          configService.get<string>('JWT_SECRET') ||
-          'your_super_secret_jwt_key_here_change_in_production',
+        secret: configService.get<string>('JWT_SECRET'),
         signOptions: {
           expiresIn: '7d',
         },

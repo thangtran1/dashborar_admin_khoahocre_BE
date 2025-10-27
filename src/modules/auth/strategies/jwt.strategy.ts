@@ -16,9 +16,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey:
-        configService.get<string>('JWT_SECRET') ||
-        'your_super_secret_jwt_key_here_change_in_production',
+      secretOrKey: configService.get<string>('JWT_SECRET')!,
     });
   }
 
@@ -28,7 +26,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('User not found');
     }
     return {
-      id: user._id.toString(),
+      id: user._id as string,
       email: user.email,
       role: user.role,
     };
