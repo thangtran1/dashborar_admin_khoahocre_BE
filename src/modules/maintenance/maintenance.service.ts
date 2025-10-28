@@ -294,12 +294,22 @@ export class MaintenanceService {
       isActive: true,
     });
 
+    let estimatedDuration: number | null = null;
+    if (activeMaintenance) {
+      estimatedDuration = Math.floor(
+        (new Date(activeMaintenance.endTime).getTime() -
+          new Date(activeMaintenance.startTime).getTime()) /
+          (60 * 1000),
+      );
+    }
+
     return {
       success: true,
       message: 'Lấy trạng thái bảo trì hiện tại thành công',
       data: {
         isUnderMaintenance: !!activeMaintenance,
         maintenance: activeMaintenance,
+        estimatedDuration,
       },
     };
   }
