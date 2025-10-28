@@ -27,11 +27,12 @@ export class MaintenanceFilterDto {
     description: 'Lọc theo trạng thái',
     enum: MaintenanceStatus,
     required: false,
-    example: MaintenanceStatus.SCHEDULED,
+    isArray: true,
+    example: [MaintenanceStatus.SCHEDULED, MaintenanceStatus.IN_PROGRESS],
   })
   @IsOptional()
-  @IsEnum(MaintenanceStatus)
-  status?: MaintenanceStatus;
+  @IsEnum(MaintenanceStatus, { each: true })
+  status?: MaintenanceStatus | MaintenanceStatus[];
 
   @ApiProperty({
     description: 'Lọc theo loại bảo trì',

@@ -87,7 +87,11 @@ export class MaintenanceService {
       query.where('title', new RegExp(title, 'i'));
     }
     if (status) {
-      query.where('status', status);
+      if (Array.isArray(status)) {
+        query.where('status').in(status);
+      } else {
+        query.where('status', status);
+      }
     }
     if (type) {
       query.where('type', type);
