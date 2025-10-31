@@ -117,6 +117,16 @@ export class AuthService {
     if (!user) {
       throw new BadRequestException('Email không tồn tại.');
     }
+    // Kiểm tra trạng thái tài khoản
+    if (user.isDeleted || user.status !== UserStatus.ACTIVE) {
+      throw new UnauthorizedException(
+        user.isDeleted
+          ? 'Tài khoản đã bị xóa. Vui lòng liên hệ quản trị viên.'
+          : user.status === UserStatus.INACTIVE
+            ? 'Tài khoản chưa được kích hoạt. Vui lòng liên hệ quản trị viên.'
+            : 'Tài khoản đã bị khóa. Vui lòng liên hệ quản trị viên.',
+      );
+    }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
@@ -126,7 +136,7 @@ export class AuthService {
     const payload = { id: user._id as string };
     const token = this.jwtService.sign(payload, { expiresIn: 900 });
 
-    const resetLink = `http://localhost:3000/reset-password?token=${token}`;
+    const resetLink = `${this.configService.get<string>('FRONTEND_URL')}/reset-password?token=${token}`;
 
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -221,7 +231,7 @@ export class AuthService {
     createdAt?: Date,
   ) {
     try {
-      const loginUrl = `${this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000'}/login`;
+      const loginUrl = `${this.configService.get<string>('FRONTEND_URL')}/login`;
 
       const transporter = nodemailer.createTransport({
         service: 'gmail',
