@@ -6,7 +6,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
-import { UserDocument } from '../users/schemas/user.schema';
+import { UserDocument, UserStatus } from '../users/schemas/user.schema';
 import { RegisterDto } from './dto/register.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
@@ -55,6 +55,17 @@ export class AuthService {
       throw new UnauthorizedException('Email không tồn tại.');
     }
 
+    // Kiểm tra trạng thái tài khoản
+    if (user.isDeleted || user.status !== UserStatus.ACTIVE) {
+      throw new UnauthorizedException(
+        user.isDeleted
+          ? 'Tài khoản đã bị xóa. Vui lòng liên hệ quản trị viên.'
+          : user.status === UserStatus.INACTIVE
+            ? 'Tài khoản chưa được kích hoạt. Vui lòng liên hệ quản trị viên.'
+            : 'Tài khoản đã bị khóa. Vui lòng liên hệ quản trị viên.',
+      );
+    }
+
     const isPasswordValid = await this.usersService.validatePassword(
       loginDto.password,
       user.password,
@@ -63,6 +74,11 @@ export class AuthService {
     if (!isPasswordValid) {
       throw new UnauthorizedException('Mật khẩu không chính xác.');
     }
+
+    // Cập nhật thông tin đăng nhập
+    user.lastLoginAt = new Date();
+    user.loginCount += 1;
+    await user.save();
 
     const payload: JwtPayload = {
       sub: user._id as string,
@@ -87,7 +103,7 @@ export class AuthService {
         id: user._id as string,
         email: user.email,
         username: user.name,
-        avatar: null,
+        avatar: user.avatar || null,
         role: user.role,
       },
     };
