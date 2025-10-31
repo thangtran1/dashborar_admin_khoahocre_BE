@@ -29,8 +29,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import {
   UpdateUserDto,
   UpdateUserPasswordDto,
-  UpdateUserRoleDto,
-  UpdateUserStatusDto,
 } from './dto/update-user.dto';
 import { AdminChangePasswordDto } from './dto/admin-change-password.dto';
 import { QueryUserDto } from './dto/query-user.dto';
@@ -307,26 +305,6 @@ export class UsersController {
     }
   }
 
-  @Get('stats')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  async getStats() {
-    try {
-      const stats = await this.usersService.getStats();
-      return {
-        success: true,
-        message: 'Lấy thống kê người dùng thành công',
-        data: stats,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message: (error as Error).message || 'Lỗi khi lấy thống kê người dùng',
-        data: null,
-      };
-    }
-  }
-
   @Get(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.MODERATOR)
@@ -362,52 +340,6 @@ export class UsersController {
       return {
         success: false,
         message: (error as Error).message || 'Lỗi khi cập nhật người dùng',
-        data: null,
-      };
-    }
-  }
-
-  @Patch(':id/role')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  async updateRole(
-    @Param('id') id: string,
-    @Body() updateRoleDto: UpdateUserRoleDto,
-  ) {
-    try {
-      const user = await this.usersService.updateRole(id, updateRoleDto);
-      return {
-        success: true,
-        message: 'Cập nhật vai trò thành công',
-        data: user,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message: (error as Error).message || 'Lỗi khi cập nhật vai trò',
-        data: null,
-      };
-    }
-  }
-
-  @Patch(':id/status')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.MODERATOR)
-  async updateStatus(
-    @Param('id') id: string,
-    @Body() updateStatusDto: UpdateUserStatusDto,
-  ) {
-    try {
-      const user = await this.usersService.updateStatus(id, updateStatusDto);
-      return {
-        success: true,
-        message: 'Cập nhật trạng thái thành công',
-        data: user,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message: (error as Error).message || 'Lỗi khi cập nhật trạng thái',
         data: null,
       };
     }

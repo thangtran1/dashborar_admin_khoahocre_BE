@@ -20,8 +20,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import {
   UpdateUserDto,
   UpdateUserPasswordDto,
-  UpdateUserRoleDto,
-  UpdateUserStatusDto,
 } from './dto/update-user.dto';
 import { QueryUserDto } from './dto/query-user.dto';
 import { BulkCreateUser } from 'src/types/entity';
@@ -29,8 +27,6 @@ import { BulkCreateUser } from 'src/types/entity';
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
-
-  // ========== CREATE OPERATIONS ==========
 
   async create(createUserDto: CreateUserDto): Promise<UserDocument> {
     const existingUser = await this.userModel
@@ -54,8 +50,6 @@ export class UsersService {
 
     return user.save();
   }
-
-  // ========== READ OPERATIONS ==========
 
   async findAll(queryDto: QueryUserDto): Promise<{
     users: UserDocument[];
@@ -151,8 +145,6 @@ export class UsersService {
     return this.userModel.findOne({ email }).select('+password').exec();
   }
 
-  // ========== UPDATE OPERATIONS ==========
-
   async update(
     id: string,
     updateUserDto: UpdateUserDto,
@@ -234,52 +226,6 @@ export class UsersService {
     return updatedUser as unknown as UserDocument;
   }
 
-  async updateRole(
-    id: string,
-    updateRoleDto: UpdateUserRoleDto,
-  ): Promise<UserDocument> {
-    const user = await this.userModel
-      .findByIdAndUpdate(
-        id,
-        { role: updateRoleDto.role, updatedAt: new Date() },
-        { new: true },
-      )
-      .select('-password -otp -otpExpiry ')
-      .exec();
-
-    if (!user) {
-      throw new NotFoundException(
-        'Không tìm thấy người dùng để cập nhật vai trò',
-      );
-    }
-
-    return user;
-  }
-
-  async updateStatus(
-    id: string,
-    updateStatusDto: UpdateUserStatusDto,
-  ): Promise<UserDocument> {
-    const user = await this.userModel
-      .findByIdAndUpdate(
-        id,
-        { status: updateStatusDto.status, updatedAt: new Date() },
-        { new: true },
-      )
-      .select('-password -otp -otpExpiry')
-      .exec();
-
-    if (!user) {
-      throw new NotFoundException(
-        'Không tìm thấy người dùng để cập nhật trạng thái',
-      );
-    }
-
-    return user;
-  }
-
-  // ========== DELETE OPERATIONS ==========
-
   async removeMany(ids: string[]): Promise<void> {
     const result = await this.userModel
       .deleteMany({ _id: { $in: ids } })
@@ -305,8 +251,6 @@ export class UsersService {
     return result.matchedCount;
   }
 
-  // ========== RESTORE USER ==========
-
   async restoreMany(ids: string[]): Promise<number> {
     const result = await this.userModel
       .updateMany(
@@ -320,17 +264,6 @@ export class UsersService {
     }
 
     return result.matchedCount;
-  }
-
-  // ========== UTILITY OPERATIONS ==========
-
-  async updateLoginInfo(id: string): Promise<void> {
-    await this.userModel
-      .findByIdAndUpdate(id, {
-        lastLoginAt: new Date(),
-        $inc: { loginCount: 1 },
-      })
-      .exec();
   }
 
   async updateOtp(
@@ -365,55 +298,6 @@ export class UsersService {
     hashedPassword: string,
   ): Promise<boolean> {
     return bcrypt.compare(plainPassword, hashedPassword);
-  }
-
-  // ========== STATISTICS ==========
-
-  async getStats(): Promise<{
-    total: number;
-    active: number;
-    inactive: number;
-    banned: number;
-    admins: number;
-    users: number;
-    moderators: number;
-    newUsersThisMonth: number;
-  }> {
-    const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-
-    const [
-      total,
-      active,
-      inactive,
-      banned,
-      admins,
-      users,
-      moderators,
-      newUsersThisMonth,
-    ] = await Promise.all([
-      this.userModel.countDocuments().exec(),
-      this.userModel.countDocuments({ status: UserStatus.ACTIVE }).exec(),
-      this.userModel.countDocuments({ status: UserStatus.INACTIVE }).exec(),
-      this.userModel.countDocuments({ status: UserStatus.BANNED }).exec(),
-      this.userModel.countDocuments({ role: UserRole.ADMIN }).exec(),
-      this.userModel.countDocuments({ role: UserRole.USER }).exec(),
-      this.userModel.countDocuments({ role: UserRole.MODERATOR }).exec(),
-      this.userModel
-        .countDocuments({ createdAt: { $gte: startOfMonth } })
-        .exec(),
-    ]);
-
-    return {
-      total,
-      active,
-      inactive,
-      banned,
-      admins,
-      users,
-      moderators,
-      newUsersThisMonth,
-    };
   }
 
   // ========== Tạo nhiều người dùng cùng lúc từ file Excel ==========

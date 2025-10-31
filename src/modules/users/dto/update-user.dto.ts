@@ -1,7 +1,6 @@
 import { PartialType, OmitType } from '@nestjs/mapped-types';
 import { CreateUserDto } from './create-user.dto';
-import { IsString, IsNotEmpty, MinLength, IsEnum } from 'class-validator';
-import { UserRole, UserStatus } from '../schemas/user.schema';
+import { IsString, IsNotEmpty, MinLength } from 'class-validator';
 
 export class UpdateUserDto extends PartialType(
   OmitType(CreateUserDto, ['password'] as const),
@@ -16,14 +15,4 @@ export class UpdateUserPasswordDto {
   @IsNotEmpty({ message: 'Mật khẩu mới không được để trống' })
   @MinLength(6, { message: 'Mật khẩu mới phải có ít nhất 6 ký tự' })
   newPassword: string;
-}
-
-export class UpdateUserRoleDto {
-  @IsEnum(UserRole, { message: 'Vai trò không hợp lệ' })
-  role: UserRole;
-}
-
-export class UpdateUserStatusDto {
-  @IsEnum(UserStatus, { message: 'Trạng thái không hợp lệ' })
-  status: UserStatus;
 }
