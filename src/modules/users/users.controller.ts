@@ -27,7 +27,10 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto, UpdateUserPasswordDto } from './dto/update-user.dto';
-import { AdminChangePasswordDto } from './dto/admin-change-password.dto';
+import {
+  AdminChangePasswordDto,
+  AdminUpdateUserPasswordDto,
+} from './dto/admin-change-password.dto';
 import { QueryUserDto } from './dto/query-user.dto';
 import { UserRole } from './schemas/user.schema';
 
@@ -430,6 +433,33 @@ export class UsersController {
         success: false,
         message: (error as Error).message || 'Lỗi khi lấy lịch sử hoạt động',
         data: [],
+      };
+    }
+  }
+
+  // Admin Update Password User
+  @Patch('admin/:id/password')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @HttpCode(HttpStatus.OK)
+  async adminUpdateUserPassword(
+    @Param('id') userId: string,
+    @Body() dto: AdminUpdateUserPasswordDto,
+  ) {
+    try {
+      await this.usersService.adminUpdateUserPassword(userId, {
+        newPassword: dto.newPassword,
+      });
+      return {
+        success: true,
+        message: 'Đổi mật khẩu user thành công',
+        data: null,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: (error as Error).message || 'Lỗi khi đổi mật khẩu user',
+        data: null,
       };
     }
   }

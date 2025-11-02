@@ -518,4 +518,26 @@ export class UsersService {
     const log = new this.activityLogModel({ userId, type, ip, userAgent });
     return await log.save();
   }
+
+  // Admin Update Password User
+  async adminUpdateUserPassword(
+    userId: string,
+    options: { currentPassword?: string; newPassword: string },
+  ) {
+    const user = await this.userModel.findById(userId);
+    if (!user) throw new NotFoundException('User không tồn tại');
+
+    // Nếu currentPassword tồn tại thì check
+    if (options.currentPassword) {
+      const isValid = await bcrypt.compare(
+        options.currentPassword,
+        user.password,
+      );
+      if (!isValid)
+        throw new UnauthorizedException('Mật khẩu hiện tại không đúng');
+    }
+
+    user.password = await bcrypt.hash(options.newPassword, 12);
+    await user.save();
+  }
 }
