@@ -6,7 +6,11 @@ import { User, UserDocument } from '../users/schemas/user.schema';
 import { BannerSeeder } from '../banner/banner.seeder';
 import { SystemSeeder } from '../system/system.seeder';
 import { MaintenanceSeeder } from '../maintenance/maintenance.seeder';
-import { Notification, NotificationDocument, NotificationType } from '../notifications/schemas/notification.schema';
+import {
+  Notification,
+  NotificationDocument,
+  NotificationType,
+} from '../notifications/schemas/notification.schema';
 
 @Injectable()
 export class SeederService {
@@ -14,7 +18,8 @@ export class SeederService {
 
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-    @InjectModel(Notification.name) private notificationModel: Model<NotificationDocument>,
+    @InjectModel(Notification.name)
+    private notificationModel: Model<NotificationDocument>,
     private bannerSeeder: BannerSeeder,
     private systemSeeder: SystemSeeder,
     private maintenanceSeeder: MaintenanceSeeder,
@@ -240,67 +245,79 @@ export class SeederService {
       {
         title: 'Thông báo 1',
         content: 'Thông báo 1',
-        actionUrl: 'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
+        actionUrl:
+          'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
         type: NotificationType.SYSTEM,
-      },  
+      },
       {
-          title: 'Thông báo 2',
+        title: 'Thông báo 2',
         content: 'Thông báo 2',
-        actionUrl: 'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
+        actionUrl:
+          'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
         type: NotificationType.SYSTEM,
       },
       {
         title: 'Thông báo 3',
         content: 'Thông báo 3',
-        actionUrl: 'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
+        actionUrl:
+          'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
         type: NotificationType.SYSTEM,
       },
       {
         title: 'Thông báo 4',
         content: 'Thông báo 4',
-        actionUrl: 'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
+        actionUrl:
+          'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
         type: NotificationType.SYSTEM,
       },
       {
         title: 'Thông báo 5',
         content: 'Thông báo 5',
-        actionUrl: 'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
+        actionUrl:
+          'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
         type: NotificationType.SYSTEM,
       },
       {
         title: 'Thông báo 6',
         content: 'Thông báo 6',
-        actionUrl: 'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
+        actionUrl:
+          'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
         type: NotificationType.SYSTEM,
       },
       {
         title: 'Thông báo 7',
         content: 'Thông báo 7',
-        actionUrl: 'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
+        actionUrl:
+          'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
         type: NotificationType.SYSTEM,
       },
       {
-            title: 'Thông báo 8',
+        title: 'Thông báo 8',
         content: 'Thông báo 8',
-        actionUrl: 'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
+        actionUrl:
+          'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
         type: NotificationType.SYSTEM,
       },
       {
         title: 'Thông báo 9',
         content: 'Thông báo 9',
-        actionUrl: 'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
+        actionUrl:
+          'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
         type: NotificationType.SYSTEM,
       },
       {
         title: 'Thông báo 10',
         content: 'Thông báo 10',
-        actionUrl: 'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
+        actionUrl:
+          'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
         type: NotificationType.SYSTEM,
       },
     ];
 
     for (const notification of notifications) {
-      const existingNotification = await this.notificationModel.findOne({ title: notification.title });
+      const existingNotification = await this.notificationModel.findOne({
+        title: notification.title,
+      });
       if (!existingNotification) {
         await this.notificationModel.create(notification);
         this.logger.log(`Đã tạo thông báo: ${notification.title}`);

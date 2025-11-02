@@ -26,10 +26,7 @@ import { RolesGuard } from '../../common/guards/roles.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { CreateUserDto } from './dto/create-user.dto';
-import {
-  UpdateUserDto,
-  UpdateUserPasswordDto,
-} from './dto/update-user.dto';
+import { UpdateUserDto, UpdateUserPasswordDto } from './dto/update-user.dto';
 import { AdminChangePasswordDto } from './dto/admin-change-password.dto';
 import { QueryUserDto } from './dto/query-user.dto';
 import { UserRole } from './schemas/user.schema';
@@ -407,6 +404,32 @@ export class UsersController {
       return {
         success: false,
         message: (error as Error).message || 'Lỗi khi khôi phục người dùng',
+      };
+    }
+  }
+
+  @Get(':id/activity-logs')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getUserActivityLogs(@Param('id') id: string) {
+    try {
+      const logs = await this.usersService.findUserActivityLogs(id);
+      return {
+        success: true,
+        message: 'Lấy lịch sử hoạt động thành công',
+        data: logs.map((log) => ({
+          id: log._id as string,
+          type: log.type,
+          timestamp: (log as unknown as { createdAt: Date }).createdAt,
+          ip: log.ip,
+          userAgent: log.userAgent,
+        })),
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: (error as Error).message || 'Lỗi khi lấy lịch sử hoạt động',
+        data: [],
       };
     }
   }

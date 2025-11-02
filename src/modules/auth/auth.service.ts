@@ -19,6 +19,7 @@ import { newUserNotificationTemplate } from 'src/templates/new-user-notification
 import { GoogleOAuthService } from './google-oauth.service';
 import { GoogleUser } from 'src/types/entity';
 import { CreateUserDto } from '../users/dto/create-user.dto';
+import type { Request } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -46,7 +47,7 @@ export class AuthService {
     };
   }
 
-  async login(loginDto: LoginDto) {
+  async login(loginDto: LoginDto, request: Request) {
     const user: UserDocument | null = await this.usersService.findByEmail(
       loginDto.email,
     );
@@ -54,6 +55,12 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('Email không tồn tại.');
     }
+    await this.usersService.createActivityLog(
+      user._id as string,
+      'login',
+      request.ip as string,
+      request.headers['user-agent'] as string,
+    );
 
     // Kiểm tra trạng thái tài khoản
     if (user.isDeleted || user.status !== UserStatus.ACTIVE) {
@@ -294,7 +301,14 @@ export class AuthService {
     }
   }
 
-  logout() {
+  async logout(userId: string, request: Request) {
+    await this.usersService.createActivityLog(
+      userId,
+      'logout',
+      request.ip as string,
+      request.headers['user-agent'] as string,
+    );
+
     return {
       success: true,
       message: 'Đăng xuất thành công.',

@@ -28,8 +28,8 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body() loginDto: LoginDto) {
-    return this.authService.login(loginDto);
+  async login(@Body() loginDto: LoginDto, @Req() request: Request) {
+    return this.authService.login(loginDto, request);
   }
 
   @Post('forgot-password')
@@ -84,7 +84,9 @@ export class AuthController {
 
   @Post('logout')
   @UseGuards(JwtAuthGuard)
-  logout() {
-    return this.authService.logout();
+  async logout(@Req() request: Request, @Res() res: Response) {
+    const userId = (request.user as { id: string })?.id;
+    const result = await this.authService.logout(userId, request);
+    return res.json(result);
   }
 }
