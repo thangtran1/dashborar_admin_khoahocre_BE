@@ -191,21 +191,4 @@ export class BannerService {
 
     return updatedBanner;
   }
-
-  async getStats(): Promise<{
-    total: number;
-    active: number;
-    inactive: number;
-  }> {
-    const [total, active] = await Promise.all([
-      this.bannerModel.countDocuments().exec(),
-      this.bannerModel.countDocuments({ isActive: true }).exec(),
-    ]);
-
-    return {
-      total,
-      active,
-      inactive: total - active,
-    };
-  }
 }

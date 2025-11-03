@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { SystemService } from './system.service';
 import { SystemController } from './system.controller';
-import { SystemSeeder } from './system.seeder';
 import {
   SystemSettings,
   SystemSettingsSchema,
@@ -15,7 +14,7 @@ import {
     ]),
   ],
   controllers: [SystemController],
-  providers: [SystemService, SystemSeeder],
-  exports: [SystemService, SystemSeeder],
+  providers: [SystemService],
+  exports: [SystemService],
 })
 export class SystemModule {}

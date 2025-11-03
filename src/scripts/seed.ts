@@ -17,4 +17,6 @@ async function bootstrap() {
   }
 }
 
-bootstrap();
+bootstrap().catch((err) => {
+  console.error('❌ Lỗi khi bootstrap:', err);
+});

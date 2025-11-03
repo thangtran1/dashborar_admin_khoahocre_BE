@@ -25,7 +25,7 @@ export class BannerController {
     private readonly bannerSettingsService: BannerSettingsService,
   ) {}
 
-  // ========== BANNER SETTINGS ENDPOINTS ==========
+  // ========== BANNER SETTINGS SERVICES ENDPOINTS ==========
 
   @Get('settings')
   async getSettings() {
@@ -84,26 +84,7 @@ export class BannerController {
     }
   }
 
-  // ========== BANNER ENDPOINTS ==========
-
-  @Post()
-  @UseGuards(JwtAuthGuard)
-  async create(@Body() createBannerDto: CreateBannerDto) {
-    try {
-      const banner = await this.bannerService.create(createBannerDto);
-      return {
-        success: true,
-        message: 'Tạo banner thành công',
-        data: banner,
-      };
-    } catch (error: any) {
-      return {
-        success: false,
-        message: (error as Error).message || 'Lỗi khi tạo banner',
-        data: null,
-      };
-    }
-  }
+  // ========== 🏷️ BANNER ENDPOINTS ==========
 
   @Get()
   @UseGuards(JwtAuthGuard)
@@ -152,25 +133,6 @@ export class BannerController {
     }
   }
 
-  @Get('stats')
-  @UseGuards(JwtAuthGuard)
-  async getStats() {
-    try {
-      const stats = await this.bannerService.getStats();
-      return {
-        success: true,
-        message: 'Lấy thống kê banner thành công',
-        data: stats,
-      };
-    } catch (error: any) {
-      return {
-        success: false,
-        message: (error as Error).message || 'Lỗi khi lấy thống kê banner',
-        data: null,
-      };
-    }
-  }
-
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   async findOne(@Param('id') id: string) {
@@ -185,6 +147,25 @@ export class BannerController {
       return {
         success: false,
         message: (error as Error).message || 'Lỗi khi lấy banner',
+        data: null,
+      };
+    }
+  }
+
+  @Post()
+  @UseGuards(JwtAuthGuard)
+  async create(@Body() createBannerDto: CreateBannerDto) {
+    try {
+      const banner = await this.bannerService.create(createBannerDto);
+      return {
+        success: true,
+        message: 'Tạo banner thành công',
+        data: banner,
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        message: (error as Error).message || 'Lỗi khi tạo banner',
         data: null,
       };
     }

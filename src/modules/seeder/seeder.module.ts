@@ -3,25 +3,45 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from '../users/schemas/user.schema';
 import { SeederService } from './seeder.service';
 import { SeederController } from './seeder.controller';
-import { BannerModule } from '../banner/banner.module';
-import { UsersModule } from '../users/users.module';
-import { SystemModule } from '../system/system.module';
-import { MaintenanceModule } from '../maintenance/maintenance.module';
 import {
   Notification,
   NotificationSchema,
 } from '../notifications/schemas/notification.schema';
+import {
+  Maintenance,
+  MaintenanceSchema,
+} from '../maintenance/schemas/maintenance.schema';
+import {
+  BannerSettings,
+  BannerSettingsSchema,
+} from '../banner/schemas/banner-settings.schema';
+import { Banner, BannerSchema } from '../banner/schemas/banner.schema';
+import {
+  SystemSettings,
+  SystemSettingsSchema,
+} from '../system/schemas/system-settings.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+
     MongooseModule.forFeature([
       { name: Notification.name, schema: NotificationSchema },
     ]),
-    BannerModule,
-    UsersModule,
-    SystemModule,
-    MaintenanceModule,
+
+    MongooseModule.forFeature([
+      { name: Maintenance.name, schema: MaintenanceSchema },
+    ]),
+
+    MongooseModule.forFeature([{ name: Banner.name, schema: BannerSchema }]),
+
+    MongooseModule.forFeature([
+      { name: BannerSettings.name, schema: BannerSettingsSchema },
+    ]),
+
+    MongooseModule.forFeature([
+      { name: SystemSettings.name, schema: SystemSettingsSchema },
+    ]),
   ],
   controllers: [SeederController],
   providers: [SeederService],

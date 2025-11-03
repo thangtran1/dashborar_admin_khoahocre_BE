@@ -42,6 +42,8 @@ export class DatabaseController {
     return this.databaseService.delete();
   }
 
+  // ========== DATABASE BACKUPS ENDPOINTS ==========
+
   @Get('backups')
   listBackups(
     @Query('search') search?: string,
@@ -59,20 +61,18 @@ export class DatabaseController {
     });
   }
 
-  @Delete('backups/:filename')
-  deleteBackup(@Param('filename') filename: string) {
-    return this.databaseService.deleteBackupFile(filename);
+  @Get('backups/view/:filename')
+  viewBackup(@Param('filename') filename: string) {
+    return this.databaseService.viewBackupFile(filename);
   }
 
-  // 🔹 Tải file backup
   @Get('backups/download-json/:filename')
   downloadBackupJson(@Param('filename') filename: string) {
     return this.databaseService.downloadBackupFileAsJson(filename);
   }
 
-  // 🔹 Xem nội dung file backup
-  @Get('backups/view/:filename')
-  viewBackup(@Param('filename') filename: string) {
-    return this.databaseService.viewBackupFile(filename);
+  @Delete('backups/:filename')
+  deleteBackup(@Param('filename') filename: string) {
+    return this.databaseService.deleteBackupFile(filename);
   }
 }

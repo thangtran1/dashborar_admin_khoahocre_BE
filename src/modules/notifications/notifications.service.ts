@@ -7,15 +7,8 @@ import {
   NotificationType,
 } from './schemas/notification.schema';
 import { CreateNotificationDto } from './dto/create-notification.dto';
+import { FindAllForAdminOptions } from 'src/types/entity';
 
-interface FindAllForAdminOptions {
-  limit?: number;
-  page?: number;
-  search?: string;
-  type?: NotificationType;
-  startDate?: string;
-  endDate?: string;
-}
 @Injectable()
 export class NotificationsService {
   constructor(

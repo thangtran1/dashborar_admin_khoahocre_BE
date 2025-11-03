@@ -9,22 +9,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import mongoose, { Connection, Types } from 'mongoose';
 import { Db, OptionalId, Document } from 'mongodb';
-import { Response } from 'express';
-
-export interface AdminHistory {
-  action: 'backup' | 'restore' | 'delete';
-  timestamp: string;
-  filename?: string;
-  admin?: string; // nếu muốn track user
-}
-
-export interface ListBackupsOptions {
-  search?: string;
-  startDate?: string;
-  endDate?: string;
-  page?: number;
-  pageSize?: number;
-}
+import { AdminHistory, ListBackupsOptions } from 'src/types/entity';
 
 @Injectable()
 export class DatabaseService {
@@ -38,7 +23,7 @@ export class DatabaseService {
     if (this.connection.readyState !== mongoose.ConnectionStates.connected) {
       throw new InternalServerErrorException('Database chưa kết nối.');
     }
-    return this.connection.db as Db;
+    return this.connection.db;
   }
 
   async getInfo() {
@@ -113,25 +98,25 @@ export class DatabaseService {
 
   async restore(file: Express.Multer.File, admin?: string) {
     const db = this.getDb();
-    const data = JSON.parse(file.buffer.toString()) as Record<string, any[]>;
+    const data = JSON.parse(file.buffer.toString()) as Record<
+      string,
+      unknown[]
+    >;
 
     for (const [collectionName, docs] of Object.entries(data)) {
       const collection = db.collection(collectionName);
       await collection.deleteMany({});
 
       if (Array.isArray(docs) && docs.length > 0) {
-        const docsWithObjectId = docs.map((doc) => {
-          // Chỉ convert _id nếu nó là string
+        const docsWithObjectId = docs.map((doc: OptionalId<Document>) => {
           if (doc._id && typeof doc._id === 'string') {
             return { ...doc, _id: new Types.ObjectId(doc._id) };
           }
           return doc;
         });
-
-        await collection.insertMany(docsWithObjectId as OptionalId<Document>[]);
+        await collection.insertMany(docsWithObjectId);
       }
     }
-
     this.history.push({
       action: 'restore',
       timestamp: new Date().toISOString(),
@@ -141,7 +126,7 @@ export class DatabaseService {
     return { success: true, message: 'Đã khôi phục dữ liệu thành công!' };
   }
 
-  // 2. Lấy lịch sử thao tác admin
+  // 1. Lấy lịch sử thao tác admin
   listBackups(options: ListBackupsOptions = {}) {
     const { search, startDate, endDate, page = 1, pageSize = 10 } = options;
 
@@ -214,9 +199,7 @@ export class DatabaseService {
     };
   }
 
-  /**
-   * 💾 Tải file backup về
-   */
+  // 2. Tải file backup về
   downloadBackupFileAsJson(filename: string) {
     const filePath = path.join(this.backupDir, filename);
 
@@ -237,9 +220,7 @@ export class DatabaseService {
     };
   }
 
-  /**
-   * 👁️ Xem chi tiết nội dung file backup trước khi tải
-   */
+  // 3. Xem chi tiết nội dung file backup trước khi tải
   viewBackupFile(filename: string) {
     const filePath = path.join(this.backupDir, filename);
 
@@ -248,7 +229,7 @@ export class DatabaseService {
     }
 
     const fileContent = fs.readFileSync(filePath, 'utf8');
-    const jsonData = JSON.parse(fileContent);
+    const jsonData = JSON.parse(fileContent) as Record<string, unknown[]>;
 
     return {
       success: true,
