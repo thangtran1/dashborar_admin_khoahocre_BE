@@ -411,6 +411,32 @@ export class UsersController {
     }
   }
 
+  // Lấy lịch sử hoạt động của admin
+  @Get('me/activity-logs')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getMyActivityLogs(@CurrentUser() user: { id: string }) {
+    try {
+      const logs = await this.usersService.findUserActivityLogs(user.id);
+      return {
+        success: true,
+        message: 'Lấy lịch sử hoạt động của admin thành công',
+        data: logs.map((log) => ({
+          id: log._id as string,
+          type: log.type,
+          timestamp: (log as unknown as { createdAt: Date }).createdAt,
+          ip: log.ip,
+          userAgent: log.userAgent,
+        })),
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: (error as Error).message || 'Lỗi khi lấy lịch sử hoạt động',
+        data: [],
+      };
+    }
+  }
   @Get(':id/activity-logs')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
