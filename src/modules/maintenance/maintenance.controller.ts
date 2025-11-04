@@ -33,6 +33,17 @@ export class MaintenanceController {
     return this.maintenanceService.findAll(filters);
   }
 
+  @Get('stats')
+  @UseGuards(JwtAuthGuard)
+  async getStats() {
+    const data = await this.maintenanceService.getStats();
+    return {
+      success: true,
+      message: 'Thống kê maintenance thành công',
+      data,
+    };
+  }
+
   @Get('current-status')
   @ApiOperation({ summary: 'Kiểm tra trạng thái bảo trì hiện tại' })
   async getCurrentStatus() {

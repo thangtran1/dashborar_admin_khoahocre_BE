@@ -123,6 +123,55 @@ export class MaintenanceService {
     };
   }
 
+  async getStats() {
+    // Lấy toàn bộ dữ liệu
+    const result = await this.maintenanceModel.aggregate([
+      {
+        $group: {
+          _id: null,
+          total: { $sum: 1 },
+          scheduled: {
+            $sum: { $cond: [{ $eq: ['$status', 'scheduled'] }, 1, 0] },
+          },
+          in_progress: {
+            $sum: { $cond: [{ $eq: ['$status', 'in_progress'] }, 1, 0] },
+          },
+          completed: {
+            $sum: { $cond: [{ $eq: ['$status', 'completed'] }, 1, 0] },
+          },
+          cancelled: {
+            $sum: { $cond: [{ $eq: ['$status', 'cancelled'] }, 1, 0] },
+          },
+        },
+      },
+    ]);
+
+    const stats = (result[0] as {
+      total: number;
+      scheduled: number;
+      in_progress: number;
+      completed: number;
+      cancelled: number;
+    }) || {
+      total: 0,
+      scheduled: 0,
+      in_progress: 0,
+      completed: 0,
+      cancelled: 0,
+    };
+
+    return {
+      labels: ['Maintenance'],
+      series: [
+        { name: 'Tổng', data: [stats.total] },
+        { name: 'Scheduled', data: [stats.scheduled] },
+        { name: 'In Progress', data: [stats.in_progress] },
+        { name: 'Completed', data: [stats.completed] },
+        { name: 'Cancelled', data: [stats.cancelled] },
+      ],
+    };
+  }
+
   async findOne(id: string) {
     const maintenance = await this.maintenanceModel.findById(id);
     if (!maintenance) {
