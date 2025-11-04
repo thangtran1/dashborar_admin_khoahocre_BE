@@ -115,6 +115,28 @@ export class BannerController {
     }
   }
 
+  @Get('stats')
+  @UseGuards(JwtAuthGuard)
+  async getBannerStats(
+    @Query('period') period: 'day' | 'week' | 'month' | 'year',
+  ) {
+    try {
+      const stats = await this.bannerService.getBannerStats(period);
+
+      return {
+        success: true,
+        message: 'Thống kê banner thành công',
+        data: stats,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: (error as Error).message || 'Lỗi khi lấy thống kê banner',
+        data: [],
+      };
+    }
+  }
+
   @Get('active')
   async findActive() {
     try {
