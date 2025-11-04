@@ -6,7 +6,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import * as XLSX from 'xlsx';
 import * as fs from 'fs';
@@ -21,14 +21,10 @@ import { QueryUserDto } from './dto/query-user.dto';
 import { BulkCreateUser } from 'src/types/entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdateUserPasswordDto } from './dto/update-user.dto';
-import { ActivityLog } from './schemas/activity-log.schema';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectModel(User.name) private userModel: Model<UserDocument>,
-    @InjectModel(ActivityLog.name) private activityLogModel: Model<ActivityLog>,
-  ) {}
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserDocument> {
     const existingUser = await this.userModel
@@ -498,25 +494,6 @@ export class UsersService {
         fs.unlinkSync(filePath);
       }
     }
-  }
-
-  // Tìm nhật ký hoạt động của người dùng
-  async findUserActivityLogs(userId: string) {
-    return this.activityLogModel
-      .find({ userId: new Types.ObjectId(userId) })
-      .sort({ createdAt: -1 })
-      .lean();
-  }
-
-  // Tạo nhật ký hoạt động cho người dùng đăng nhập, đăng xuất .... coming soon
-  async createActivityLog(
-    userId: string,
-    type: string,
-    ip?: string,
-    userAgent?: string,
-  ) {
-    const log = new this.activityLogModel({ userId, type, ip, userAgent });
-    return await log.save();
   }
 
   // Admin Update Password User

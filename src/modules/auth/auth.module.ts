@@ -10,11 +10,13 @@ import { GoogleStrategy } from './strategies/google.strategy';
 import { GoogleOAuthService } from './google-oauth.service';
 import { GitHubController } from './github.controller';
 import { GitHubOAuthService } from './github-oauth.service';
+import { ActivityLogModule } from '../activity-log/activity-log.module';
 
 @Module({
   imports: [
     UsersModule,
     PassportModule,
+    ActivityLogModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({

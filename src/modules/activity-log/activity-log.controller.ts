@@ -1,0 +1,76 @@
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
+import { ActivityLogService } from './activity-log.service';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { UserRole } from '../users/schemas/user.schema';
+
+@Controller('activity-log')
+export class ActivityLogController {
+  constructor(private readonly activityLogService: ActivityLogService) {}
+
+  @Get('stats')
+  async getActivityStats(
+    @Query('period') period: 'day' | 'week' | 'month' | 'year',
+  ) {
+    const stats = await this.activityLogService.getStats(period);
+    return {
+      success: true,
+      message: 'Lấy thống kê hoạt động thành công',
+      data: stats,
+    };
+  }
+
+  // Lấy lịch sử hoạt động của admin
+  @Get('admin')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getMyActivityLogs(@CurrentUser() user: { id: string }) {
+    try {
+      const logs = await this.activityLogService.findUserActivityLogs(user.id);
+      return {
+        success: true,
+        message: 'Lấy lịch sử hoạt động của admin thành công',
+        data: logs.map((log) => ({
+          id: log._id as string,
+          type: log.type,
+          timestamp: (log as unknown as { createdAt: Date }).createdAt,
+          ip: log.ip,
+          userAgent: log.userAgent,
+        })),
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: (error as Error).message || 'Lỗi khi lấy lịch sử hoạt động',
+        data: [],
+      };
+    }
+  }
+  @Get(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getUserActivityLogs(@Param('id') id: string) {
+    try {
+      const logs = await this.activityLogService.findUserActivityLogs(id);
+      return {
+        success: true,
+        message: 'Lấy lịch sử hoạt động thành công',
+        data: logs.map((log) => ({
+          id: log._id as string,
+          type: log.type,
+          timestamp: (log as unknown as { createdAt: Date }).createdAt,
+          ip: log.ip,
+          userAgent: log.userAgent,
+        })),
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: (error as Error).message || 'Lỗi khi lấy lịch sử hoạt động',
+        data: [],
+      };
+    }
+  }
+}

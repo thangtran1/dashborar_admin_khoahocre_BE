@@ -20,11 +20,13 @@ import { GoogleOAuthService } from './google-oauth.service';
 import { GoogleUser } from 'src/types/entity';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import type { Request } from 'express';
+import { ActivityLogService } from '../activity-log/activity-log.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
+    private activityLogService: ActivityLogService,
     private jwtService: JwtService,
     private configService: ConfigService,
     private googleOAuthService: GoogleOAuthService,
@@ -55,7 +57,7 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('Email không tồn tại.');
     }
-    await this.usersService.createActivityLog(
+    await this.activityLogService.createActivityLog(
       user._id as string,
       'login',
       request.ip as string,
@@ -302,7 +304,7 @@ export class AuthService {
   }
 
   async logout(userId: string, request: Request) {
-    await this.usersService.createActivityLog(
+    await this.activityLogService.createActivityLog(
       userId,
       'logout',
       request.ip as string,
