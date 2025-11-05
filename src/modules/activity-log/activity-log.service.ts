@@ -194,7 +194,6 @@ export class ActivityLogService {
   }
   // Lấy phiên đăng nhập của người dùng
   async getUserLoginSessions(
-    excludeAdmin: boolean = true,
     filter?: SessionFilter,
     page: number = 1,
     limit: number = 10,
@@ -223,7 +222,7 @@ export class ActivityLogService {
         const latest = acts[0];
         const user = latest.userId as unknown as UserDocument;
 
-        if (excludeAdmin && user.role === UserRole.ADMIN) continue;
+        if (user.role === UserRole.ADMIN) continue;
 
         const session: UserLoginSession = {
           userId,

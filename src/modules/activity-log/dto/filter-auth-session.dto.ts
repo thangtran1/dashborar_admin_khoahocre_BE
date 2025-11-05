@@ -1,21 +1,14 @@
 import { Type } from 'class-transformer';
 import {
   IsOptional,
-  IsBoolean,
   IsIn,
   IsString,
   IsDateString,
   IsInt,
   Min,
 } from 'class-validator';
-import { Transform } from 'class-transformer';
 
 export class FilterAuthSessionDto {
-  @IsOptional()
-  @Transform(({ value }) => (value === 'false' ? false : true))
-  @IsBoolean()
-  excludeAdmin?: boolean;
-
   @IsOptional()
   @IsIn(['active', 'revoked'])
   sessionStatus?: 'active' | 'revoked';

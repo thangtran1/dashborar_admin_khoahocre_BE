@@ -28,7 +28,7 @@ export class ActivityLogController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   async getAllLoginSessions(@Query() query: FilterAuthSessionDto) {
-    const { excludeAdmin, sessionStatus, keyword, from, to, page, limit } =
+    const {  sessionStatus, keyword, from, to, page, limit } =
       query;
 
     const filter = {
@@ -43,7 +43,6 @@ export class ActivityLogController {
 
     const { sessions, total } =
       await this.activityLogService.getUserLoginSessions(
-        excludeAdmin,
         filter,
         pageNumber,
         limitNumber,
