@@ -5,9 +5,8 @@ export type NotificationDocument = Notification & Document;
 
 export enum NotificationType {
   SYSTEM = 'system',
-  PROMOTION = 'promotion',
+  NEWS = 'news',
   MAINTENANCE = 'maintenance',
-  UPDATE = 'update',
 }
 @Schema({ timestamps: true })
 export class Notification {

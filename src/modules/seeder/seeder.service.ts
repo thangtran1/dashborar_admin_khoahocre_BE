@@ -293,35 +293,35 @@ export class SeederService {
         content: 'Thông báo 1',
         actionUrl:
           'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
-        type: NotificationType.SYSTEM,
+        type: NotificationType.NEWS,
       },
       {
         title: 'Thông báo 2',
         content: 'Thông báo 2',
         actionUrl:
           'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
-        type: NotificationType.SYSTEM,
+        type: NotificationType.NEWS,
       },
       {
         title: 'Thông báo 3',
         content: 'Thông báo 3',
         actionUrl:
           'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
-        type: NotificationType.SYSTEM,
+        type: NotificationType.NEWS,
       },
       {
         title: 'Thông báo 4',
         content: 'Thông báo 4',
         actionUrl:
           'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
-        type: NotificationType.SYSTEM,
+        type: NotificationType.NEWS,
       },
       {
         title: 'Thông báo 5',
         content: 'Thông báo 5',
         actionUrl:
           'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
-        type: NotificationType.SYSTEM,
+        type: NotificationType.NEWS,
       },
       {
         title: 'Thông báo 6',
@@ -356,7 +356,62 @@ export class SeederService {
         content: 'Thông báo 10',
         actionUrl:
           'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
-        type: NotificationType.SYSTEM,
+        type: NotificationType.MAINTENANCE,
+      },
+      {
+        title: 'Thông báo 11',
+        content: 'Thông báo 11',
+        actionUrl:
+          'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
+        type: NotificationType.MAINTENANCE,
+      },
+      {
+        title: 'Thông báo 12',
+        content: 'Thông báo 12',
+        actionUrl:
+          'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
+        type: NotificationType.MAINTENANCE,
+      },
+      {
+        title: 'Thông báo 13',
+        content: 'Thông báo 13',
+        actionUrl:
+          'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
+        type: NotificationType.MAINTENANCE,
+      },
+      {
+        title: 'Thông báo 14',
+        content: 'Thông báo 14',
+        actionUrl:
+          'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
+        type: NotificationType.MAINTENANCE,
+      },
+      {
+        title: 'Thông báo 15',
+        content: 'Thông báo 15',
+        actionUrl:
+          'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
+        type: NotificationType.MAINTENANCE,
+        createdAt: '2025-11-04T06:09:13.345+00:00',
+        updatedAt: '2025-11-04T06:09:13.345+00:00',
+      },
+      {
+        title: 'Thông báo 16',
+        content: 'Thông báo 16',
+        actionUrl:
+          'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
+        type: NotificationType.MAINTENANCE,
+        createdAt: '2025-11-04T06:09:13.345+00:00',
+        updatedAt: '2025-11-04T06:09:13.345+00:00',
+      },
+      {
+        title: 'Thông báo 17',
+        content: 'Thông báo 17',
+        actionUrl:
+          'https://statictuoitre.mediacdn.vn/thumb_w/640/2017/7-1512755474943.jpg',
+        type: NotificationType.MAINTENANCE,
+        createdAt: '2025-11-04T06:09:13.345+00:00',
+        updatedAt: '2025-11-04T06:09:13.345+00:00',
       },
     ];
 

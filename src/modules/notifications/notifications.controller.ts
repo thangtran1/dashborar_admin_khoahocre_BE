@@ -41,6 +41,29 @@ export class NotificationsController {
     );
   }
 
+  @Get('stats')
+  @UseGuards(JwtAuthGuard)
+  async getNotificationStats(
+    @Query('period') period: 'day' | 'week' | 'month' | 'year',
+  ) {
+    try {
+      const stats =
+        await this.notificationsService.getNotificationStats(period);
+
+      return {
+        success: true,
+        message: 'Thống kê thông báo thành công',
+        data: stats,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: (error as Error).message || 'Lỗi khi lấy thống kê thông báo',
+        data: [],
+      };
+    }
+  }
+
   @Get('unread-count')
   async getUnreadCount(@Request() req: RequestWithUser) {
     const count = await this.notificationsService.getUnreadCount(req.user.id);
