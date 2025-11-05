@@ -4,7 +4,7 @@ import { Document, Types } from 'mongoose';
 @Schema({ timestamps: true })
 export class ActivityLog extends Document {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  userId: string;
+  userId: Types.ObjectId;
 
   @Prop({ required: true })
   type: string; // login, logout, update_profile, create_user, update_user, delete_user, etc.
@@ -14,6 +14,9 @@ export class ActivityLog extends Document {
 
   @Prop()
   userAgent: string;
+
+  @Prop()
+  createdAt: Date;
 }
 
 export const ActivityLogSchema = SchemaFactory.createForClass(ActivityLog);

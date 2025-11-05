@@ -1,12 +1,15 @@
-// activity.service.ts
 import { Injectable } from '@nestjs/common';
 import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { ActivityLog } from './schemas/activity-log.schema';
+import { User, UserDocument, UserRole } from '../users/schemas/user.schema';
+import { SessionFilter, UserLoginSession } from 'src/types/entity';
 @Injectable()
 export class ActivityLogService {
   constructor(
-    @InjectModel(ActivityLog.name) private activityLogModel: Model<ActivityLog>,
+    @InjectModel(ActivityLog.name)
+    private activityLogModel: Model<ActivityLog>,
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
   ) {}
 
   // day: 7 giờ gần nhất
@@ -188,5 +191,87 @@ export class ActivityLogService {
       .find({ userId: new Types.ObjectId(userId) })
       .sort({ createdAt: -1 })
       .lean();
+  }
+  // Lấy phiên đăng nhập của người dùng
+  async getUserLoginSessions(
+    excludeAdmin: boolean = true,
+    filter?: SessionFilter,
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<{ sessions: UserLoginSession[]; total: number }> {
+    try {
+      const allActivities = await this.activityLogModel
+        .find({ type: { $in: ['login', 'logout'] } })
+        .sort({ createdAt: -1 })
+        .populate('userId', 'name email role status')
+        .lean();
+
+      const activitiesByUser = new Map<string, typeof allActivities>();
+
+      for (const act of allActivities) {
+        const user = act.userId as unknown as UserDocument;
+        if (!user?._id) continue;
+        const userId = (user._id as Types.ObjectId).toString();
+
+        if (!activitiesByUser.has(userId)) activitiesByUser.set(userId, []);
+        activitiesByUser.get(userId)!.push(act);
+      }
+
+      const allSessions: UserLoginSession[] = [];
+
+      for (const [userId, acts] of activitiesByUser.entries()) {
+        const latest = acts[0];
+        const user = latest.userId as unknown as UserDocument;
+
+        if (excludeAdmin && user.role === UserRole.ADMIN) continue;
+
+        const session: UserLoginSession = {
+          userId,
+          sessionStatus: latest.type === 'login' ? 'active' : 'revoked',
+          lastActivityType: latest.type,
+          lastActivityTime: latest.createdAt,
+          ip: latest.ip ?? null,
+          userAgent: latest.userAgent ?? null,
+          userName: user.name ?? 'Unknown',
+          email: user.email ?? 'Unknown',
+          status: user.status ?? 'Unknown',
+        };
+
+        // Filter sessionStatus
+        if (
+          filter?.sessionStatus &&
+          session.sessionStatus !== filter.sessionStatus
+        )
+          continue;
+
+        // Filter keyword
+        if (filter?.keyword) {
+          const keyword = filter.keyword.toLowerCase();
+          if (
+            !session.userName.toLowerCase().includes(keyword) &&
+            !session.email.toLowerCase().includes(keyword)
+          ) {
+            continue;
+          }
+        }
+
+        // Filter lastActivityTime
+        const lastTime = session.lastActivityTime ?? new Date(0);
+        if (filter?.from && lastTime < filter.from) continue;
+        if (filter?.to && lastTime > filter.to) continue;
+
+        allSessions.push(session);
+      }
+
+      const total = allSessions.length;
+      const start = (page - 1) * limit;
+      const paginatedSessions = allSessions.slice(start, start + limit);
+
+      return { sessions: paginatedSessions, total };
+    } catch (error) {
+      throw new Error(
+        `Failed to get user login sessions: ${(error as Error).message}`,
+      );
+    }
   }
 }

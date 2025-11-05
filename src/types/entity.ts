@@ -46,3 +46,22 @@ export interface FindAllForAdminOptions {
   startDate?: string;
   endDate?: string;
 }
+
+export interface UserLoginSession {
+  userId: string;
+  sessionStatus: 'active' | 'revoked' | 'no_session';
+  lastActivityType: string | null;
+  lastActivityTime: Date | null;
+  ip: string | null;
+  userAgent: string | null;
+  userName: string;
+  email: string;
+  status: string;
+}
+
+export interface SessionFilter {
+  sessionStatus?: 'active' | 'revoked';
+  keyword?: string; // tìm theo userName hoặc email
+  from?: Date;
+  to?: Date;
+}
