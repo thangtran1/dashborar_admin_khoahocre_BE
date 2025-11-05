@@ -13,7 +13,6 @@ export enum UserRole {
 export enum UserStatus {
   ACTIVE = 'active',
   INACTIVE = 'inactive',
-  BANNED = 'banned',
 }
 
 @Schema({ timestamps: true })

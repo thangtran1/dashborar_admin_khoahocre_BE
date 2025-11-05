@@ -21,6 +21,7 @@ import { QueryUserDto } from './dto/query-user.dto';
 import { BulkCreateUser } from 'src/types/entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdateUserPasswordDto } from './dto/update-user.dto';
+import { UserStatsRange } from './dto/query-user-stats.dto';
 
 @Injectable()
 export class UsersService {
@@ -119,6 +120,161 @@ export class UsersService {
       page,
       limit,
       totalPages: Math.ceil(total / limit),
+    };
+  }
+
+  async getUserStats(period: UserStatsRange) {
+    const now = new Date();
+    const labels: string[] = [];
+    let startDate: Date;
+    let intervalDays = 0;
+
+    if (period === UserStatsRange.DAY) {
+      startDate = new Date(now);
+      startDate.setHours(now.getHours() - 6, 0, 0, 0); // Lấy 6 giờ trước và bắt đầu từ đầu giờ
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(startDate);
+        d.setHours(startDate.getHours() + i);
+        labels.push(d.getHours().toString().padStart(2, '0'));
+      }
+    } else if (period === UserStatsRange.WEEK) {
+      startDate = new Date(now);
+      startDate.setDate(now.getDate() - 6); // Lấy 6 ngày trước
+      startDate.setHours(0, 0, 0, 0);
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(startDate);
+        d.setDate(startDate.getDate() + i);
+        labels.push(
+          `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}`, // Format: DD/MM
+        );
+      }
+    } else if (period === UserStatsRange.MONTH) {
+      startDate = new Date(now);
+      startDate.setDate(now.getDate() - 30); // Tính từ 30 ngày trước
+      intervalDays = Math.ceil(30 / 6); // 6 interval (30 ngày chia cho 6)
+      for (let i = 0; i < 6; i++) {
+        const d = new Date(startDate);
+        d.setDate(startDate.getDate() + i * intervalDays); // Tính các bucket
+        if (d > now) d.setTime(now.getTime()); // Đảm bảo không vượt quá hiện tại
+        labels.push(
+          `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}`, // Format: DD/MM
+        );
+      }
+    } else if (period === UserStatsRange.YEAR) {
+      const currentYear = now.getFullYear();
+      startDate = new Date(currentYear - 6, 0, 1); // Tính từ 6 năm trước
+      for (let i = 0; i < 7; i++) {
+        labels.push((currentYear - 6 + i).toString()); // Format: YYYY
+      }
+    } else {
+      startDate = new Date(now);
+      startDate.setHours(0, 0, 0, 0); // Default fallback
+    }
+
+    // --- Aggregate MongoDB ---
+    const result = await this.userModel.aggregate([
+      { $match: { createdAt: { $gte: startDate } } },
+      {
+        $addFields: {
+          timeKey:
+            period === UserStatsRange.DAY
+              ? { $hour: { date: '$createdAt', timezone: '+07:00' } }
+              : period === UserStatsRange.WEEK
+                ? {
+                    $dateToString: {
+                      format: '%d/%m',
+                      date: '$createdAt',
+                      timezone: '+07:00',
+                    },
+                  }
+                : period === UserStatsRange.MONTH
+                  ? {
+                      $floor: {
+                        $divide: [
+                          { $subtract: ['$createdAt', startDate] },
+                          1000 * 60 * 60 * 24 * intervalDays, // Tính các khoảng thời gian của bucket
+                        ],
+                      },
+                    }
+                  : period === UserStatsRange.YEAR
+                    ? { $year: { date: '$createdAt', timezone: '+07:00' } }
+                    : null,
+        },
+      },
+      {
+        $group: {
+          _id: '$timeKey', // Nhóm theo thời gian (timeKey)
+          total: { $sum: 1 }, // Tổng số người dùng
+          active: {
+            $sum: {
+              $cond: [
+                { $eq: ['$status', 'active'] }, // Check status = 'active'
+                1,
+                0,
+              ],
+            },
+          },
+          inactive: {
+            $sum: {
+              $cond: [
+                { $eq: ['$status', 'inactive'] }, // Check status = 'inactive'
+                1,
+                0,
+              ],
+            },
+          },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]);
+
+    // --- Chuẩn hoá dữ liệu ---
+    const totalData = labels.map((label, idx) => {
+      const key =
+        period === UserStatsRange.WEEK
+          ? label
+          : period === UserStatsRange.MONTH
+            ? idx
+            : parseInt(label);
+      const found = result.find(
+        (r: { _id: number | string }) => r._id === key,
+      ) as { total: number };
+      return found ? (found as { total: number }).total : 0;
+    });
+
+    const activeData = labels.map((label, idx) => {
+      const key =
+        period === UserStatsRange.WEEK
+          ? label
+          : period === UserStatsRange.MONTH
+            ? idx
+            : parseInt(label);
+      const found = result.find(
+        (r: { _id: number | string }) => r._id === key,
+      ) as { active: number };
+      return found ? (found as { active: number }).active : 0;
+    });
+
+    const inactiveData = labels.map((label, idx) => {
+      const key =
+        period === UserStatsRange.WEEK
+          ? label
+          : period === UserStatsRange.MONTH
+            ? idx
+            : parseInt(label);
+      const found = result.find(
+        (r: { _id: number | string }) => r._id === key,
+      ) as { inactive: number };
+      return found ? (found as { inactive: number }).inactive : 0;
+    });
+
+    return {
+      labels,
+      series: [
+        { name: 'Tổng người dùng', data: totalData },
+        { name: 'Hoạt động', data: activeData },
+        { name: 'Không hoạt động', data: inactiveData },
+      ],
     };
   }
 

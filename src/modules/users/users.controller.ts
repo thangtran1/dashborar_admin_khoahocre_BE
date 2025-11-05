@@ -33,6 +33,7 @@ import {
 } from './dto/admin-change-password.dto';
 import { QueryUserDto } from './dto/query-user.dto';
 import { UserRole } from './schemas/user.schema';
+import { QueryUserStatsDto, UserStatsRange } from './dto/query-user-stats.dto';
 
 @Controller('user')
 export class UsersController {
@@ -42,6 +43,29 @@ export class UsersController {
   ) {}
 
   // ========== PUBLIC ENDPOINTS ==========
+
+  @Get('stats')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.MODERATOR)
+  async getUserStats(
+    @Query(new ValidationPipe({ transform: true })) query: QueryUserStatsDto,
+  ) {
+    try {
+      const data = await this.usersService.getUserStats(
+        query.period as UserStatsRange,
+      );
+      return {
+        success: true,
+        message: 'Lấy thống kê người dùng thành công',
+        data,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: (error as Error).message,
+      };
+    }
+  }
 
   @Get('profile')
   @UseGuards(JwtAuthGuard)
