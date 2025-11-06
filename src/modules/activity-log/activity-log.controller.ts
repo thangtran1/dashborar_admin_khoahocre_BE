@@ -51,12 +51,11 @@ export class ActivityLogController {
     return {
       success: true,
       message: 'Lấy danh sách phiên đăng nhập thành công',
-      data: sessions,
-      meta: {
+      data: {
+        authSessions: sessions,
+        total: total,
         page: pageNumber,
         limit: limitNumber,
-        total,
-        totalPages: Math.ceil(total / limitNumber),
       },
     };
   }
