@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
 
 export class ResetPasswordDto {
   @IsString({ message: 'Token phải là chuỗi' })
@@ -10,7 +10,7 @@ export class ResetPasswordDto {
   @MinLength(6, { message: 'Mật khẩu mới phải có ít nhất 6 ký tự' })
   newPassword: string;
 
+  @IsOptional() // 👈 biến currentPassword thành không bắt buộc
   @IsString({ message: 'Mật khẩu cũ phải là chuỗi' })
-  @IsNotEmpty({ message: 'Mật khẩu cũ là bắt buộc' })
-  currentPassword: string;
+  currentPassword?: string;
 }

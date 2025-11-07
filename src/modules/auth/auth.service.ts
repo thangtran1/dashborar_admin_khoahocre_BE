@@ -215,7 +215,7 @@ export class AuthService {
         resetPasswordDto.token,
       );
       await this.usersService.updatePassword(decoded.id, {
-        currentPassword: resetPasswordDto.currentPassword,
+        currentPassword: resetPasswordDto.currentPassword || '',
         newPassword: resetPasswordDto.newPassword,
       });
 
