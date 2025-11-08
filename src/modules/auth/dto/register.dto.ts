@@ -1,6 +1,7 @@
 import {
   IsEmail,
   IsNotEmpty,
+  IsOptional,
   IsString,
   MinLength,
   Validate,
@@ -42,11 +43,14 @@ export class RegisterDto {
   confirmPassword: string;
 
   @IsString({ message: 'Role phải là chuỗi' })
+  @IsOptional()
   role?: string = 'user'; // Mặc định là 'user' nếu không được cung cấp
 
   @IsString()
+  @IsOptional()
   provider?: string; // 'local', 'google', 'github', etc.
 
   @IsString()
+  @IsOptional()
   providerId?: string; // ID từ provider (Google ID, GitHub ID, etc.)
 }

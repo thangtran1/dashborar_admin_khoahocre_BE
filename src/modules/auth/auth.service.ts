@@ -214,10 +214,10 @@ export class AuthService {
       const decoded: { id: string } = this.jwtService.verify(
         resetPasswordDto.token,
       );
-      await this.usersService.updatePassword(decoded.id, {
-        currentPassword: resetPasswordDto.currentPassword || '',
-        newPassword: resetPasswordDto.newPassword,
-      });
+      await this.usersService.resetPassword(
+        decoded.id,
+        resetPasswordDto.newPassword,
+      );
 
       return {
         success: true,
