@@ -164,13 +164,6 @@ export const newUserNotificationTemplate = (
             <div class='content'>
                 <!-- Header -->
                 <table class='header' cellpadding='0' cellspacing='0' border='0' width='100%'>
-                <!-- Logo row -->
-                <tr>
-                    <td style='padding: 16px 0'>
-                    <img src='  ' alt='TVT-Admin Logo' width='161' height='31' style='display: block' />
-                    </td>
-                </tr>
-
                 <!-- Title + subtitle row -->
                 <tr>
                     <td>
