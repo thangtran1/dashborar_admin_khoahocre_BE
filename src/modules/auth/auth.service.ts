@@ -7,7 +7,6 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
 import { UserDocument, UserStatus } from '../users/schemas/user.schema';
-import { RegisterDto } from './dto/register.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
@@ -18,7 +17,6 @@ import { templateHtml } from 'src/templates/reset-password-form';
 import { newUserNotificationTemplate } from 'src/templates/new-user-notification';
 import { GoogleOAuthService } from './google-oauth.service';
 import { GoogleUser } from 'src/types/entity';
-import { CreateUserDto } from '../users/dto/create-user.dto';
 import type { Request } from 'express';
 import { ActivityLogService } from '../activity-log/activity-log.service';
 
@@ -31,23 +29,6 @@ export class AuthService {
     private configService: ConfigService,
     private googleOAuthService: GoogleOAuthService,
   ) {}
-
-  async register(registerDto: RegisterDto) {
-    const user: UserDocument = await this.usersService.create(
-      registerDto as CreateUserDto,
-    );
-
-    return {
-      message: 'Đăng ký thành công.',
-      success: true,
-      user: {
-        id: user._id as string,
-        email: user.email,
-        name: user.name,
-        role: user.role,
-      },
-    };
-  }
 
   async login(loginDto: LoginDto, request: Request) {
     const user: UserDocument | null = await this.usersService.findByEmail(
