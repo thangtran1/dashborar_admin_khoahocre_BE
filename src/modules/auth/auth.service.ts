@@ -36,7 +36,7 @@ export class AuthService {
     );
 
     if (!user) {
-      throw new UnauthorizedException('Email không tồn tại.');
+      throw new UnauthorizedException('Email không tồn tại trong hệ thống.');
     }
     await this.activityLogService.createActivityLog(
       user._id as string,
@@ -105,7 +105,7 @@ export class AuthService {
     );
 
     if (!user) {
-      throw new BadRequestException('Email không tồn tại.');
+      throw new BadRequestException('Email không tồn tại trong hệ thống.');
     }
     // Kiểm tra trạng thái tài khoản
     if (user.isDeleted || user.status !== UserStatus.ACTIVE) {
