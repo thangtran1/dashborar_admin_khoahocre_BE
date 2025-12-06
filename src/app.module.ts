@@ -12,6 +12,7 @@ import { BannerModule } from './modules/banner/banner.module';
 import { SystemModule } from './modules/system/system.module';
 import { DatabaseModule } from './modules/database/database.module';
 import { MaintenanceModule } from './modules/maintenance/maintenance.module';
+import { FeedbackModule } from './modules/feedback/feedback.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { MaintenanceModule } from './modules/maintenance/maintenance.module';
     SystemModule,
     DatabaseModule,
     MaintenanceModule,
+    FeedbackModule,
   ],
 
   controllers: [AppController],
