@@ -13,6 +13,9 @@ import { SystemModule } from './modules/system/system.module';
 import { DatabaseModule } from './modules/database/database.module';
 import { MaintenanceModule } from './modules/maintenance/maintenance.module';
 import { FeedbackModule } from './modules/feedback/feedback.module';
+import { CategoriesModule } from './modules/categories/categories.module';
+import { BrandsModule } from './modules/brands/brands.module';
+import { ProductsModule } from './modules/products/products.module';
 
 @Module({
   imports: [
@@ -30,6 +33,9 @@ import { FeedbackModule } from './modules/feedback/feedback.module';
     DatabaseModule,
     MaintenanceModule,
     FeedbackModule,
+    CategoriesModule,
+    BrandsModule,
+    ProductsModule,
   ],
 
   controllers: [AppController],
