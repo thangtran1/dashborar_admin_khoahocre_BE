@@ -451,32 +451,34 @@ export class ProductsService {
     isAdmin: boolean,
     replyDto: ReplyReviewDto,
   ): Promise<ProductDocument> {
-    const product = await this.productModel.findOne({
-      _id: productId,
-      isDeleted: false,
-      'reviews._id': reviewId,
-    });
+    // Sử dụng $push operator để đảm bảo push vào array đúng cách
+    const product = await this.productModel.findOneAndUpdate(
+      {
+        _id: productId,
+        isDeleted: false,
+        'reviews._id': reviewId,
+      },
+      {
+        $push: {
+          'reviews.$.replies': {
+            _id: new Types.ObjectId(),
+            comment: replyDto.comment,
+            user: new Types.ObjectId(userId),
+            userName,
+            isAdmin,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        },
+      },
+      { new: true },
+    );
 
     if (!product) {
       throw new NotFoundException('Review không tồn tại');
     }
 
-    const review = product.reviews.find(
-      (r: any) => r._id.toString() === reviewId,
-    );
-
-    if (!review) {
-      throw new NotFoundException('Review không tồn tại');
-    }
-
-    review.replies.push({
-      comment: replyDto.comment,
-      user: new Types.ObjectId(userId),
-      userName,
-      isAdmin,
-    } as any);
-
-    return product.save();
+    return product;
   }
 
   async approveReview(

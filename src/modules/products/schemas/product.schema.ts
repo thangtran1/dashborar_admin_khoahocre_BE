@@ -194,6 +194,7 @@ export class Product {
     },
   })
   dimensions?: {
+    _id?: string;
     length: number;
     width: number;
     height: number;
