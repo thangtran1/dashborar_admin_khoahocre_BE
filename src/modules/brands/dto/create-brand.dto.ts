@@ -9,6 +9,7 @@ import {
   MinLength,
 } from 'class-validator';
 import { BrandStatus } from '../schemas/brand.schema';
+import { Transform } from 'class-transformer';
 
 export class CreateBrandDto {
   @IsString()
@@ -32,6 +33,7 @@ export class CreateBrandDto {
 
   @IsUrl()
   @IsOptional()
+  @Transform(({ value }) => (value === '' ? undefined : value))
   website?: string;
 
   @IsEnum(BrandStatus)
