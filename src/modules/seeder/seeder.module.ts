@@ -20,6 +20,12 @@ import {
   SystemSettings,
   SystemSettingsSchema,
 } from '../system/schemas/system-settings.schema';
+import { Brand, BrandSchema } from '../brands/schemas/brand.schema';
+import {
+  Category,
+  CategorySchema,
+} from '../categories/schemas/category.schema';
+import { Product, ProductSchema } from '../products/schemas/product.schema';
 
 @Module({
   imports: [
@@ -42,6 +48,11 @@ import {
     MongooseModule.forFeature([
       { name: SystemSettings.name, schema: SystemSettingsSchema },
     ]),
+    MongooseModule.forFeature([{ name: Brand.name, schema: BrandSchema }]),
+    MongooseModule.forFeature([
+      { name: Category.name, schema: CategorySchema },
+    ]),
+    MongooseModule.forFeature([{ name: Product.name, schema: ProductSchema }]),
   ],
   controllers: [SeederController],
   providers: [SeederService],
