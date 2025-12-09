@@ -231,8 +231,13 @@ export class ProductsService {
     updateProductDto: UpdateProductDto,
   ): Promise<ProductDocument> {
     const product = await this.findOne(id);
-    const oldCategoryId = product.category.toString();
-    const oldBrandId = product.brand.toString();
+    const oldCategoryId = product.category?._id
+      ? product.category._id.toString() // nếu category là object
+      : product.category?.toString(); // nếu category đã là string hoặc null
+
+    const oldBrandId = product.brand?._id
+      ? product.brand._id.toString()
+      : product.brand?.toString();
 
     // Nếu có cập nhật category, kiểm tra tồn tại
     if (updateProductDto.category) {
@@ -289,7 +294,10 @@ export class ProductsService {
     const savedProduct = await product.save();
 
     // Cập nhật product count nếu thay đổi category
-    if (updateProductDto.category && updateProductDto.category !== oldCategoryId) {
+    if (
+      updateProductDto.category &&
+      updateProductDto.category !== oldCategoryId
+    ) {
       await Promise.all([
         this.categoriesService.updateProductCount(oldCategoryId, -1),
         this.categoriesService.updateProductCount(updateProductDto.category, 1),
@@ -400,8 +408,10 @@ export class ProductsService {
         status: 'active',
         isDeleted: false,
         _id: { $ne: productId },
-        $or: [ { category: product.category._id || product.category },
-          { brand: product.brand._id || product.brand }],
+        $or: [
+          { category: product.category._id || product.category },
+          { brand: product.brand._id || product.brand },
+        ],
       })
       .populate('category', 'name slug')
       .populate('brand', 'name slug logo')
@@ -438,7 +448,8 @@ export class ProductsService {
 
     // Tính average rating
     const totalRating = product.reviews.reduce((sum, r) => sum + r.rating, 0);
-    product.averageRating = Math.round((totalRating / product.reviews.length) * 10) / 10;
+    product.averageRating =
+      Math.round((totalRating / product.reviews.length) * 10) / 10;
 
     return product.save();
   }
