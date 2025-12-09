@@ -184,7 +184,8 @@ export class BrandsService {
   }
 
   // Cập nhật số lượng sản phẩm trong brand
-  async updateProductCount(brandId: string, increment: number): Promise<void> {
+  async updateProductCount(brandId: string, increment: number) {
+    if (!Types.ObjectId.isValid(brandId)) return;
     await this.brandModel.findByIdAndUpdate(brandId, {
       $inc: { productCount: increment },
     });

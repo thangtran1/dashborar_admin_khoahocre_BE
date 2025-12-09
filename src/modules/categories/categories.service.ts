@@ -31,8 +31,11 @@ export class CategoriesService {
       .trim();
   }
 
-  async create(createCategoryDto: CreateCategoryDto): Promise<CategoryDocument> {
-    const slug = createCategoryDto.slug || this.generateSlug(createCategoryDto.name);
+  async create(
+    createCategoryDto: CreateCategoryDto,
+  ): Promise<CategoryDocument> {
+    const slug =
+      createCategoryDto.slug || this.generateSlug(createCategoryDto.name);
 
     // Kiểm tra slug đã tồn tại chưa
     const existingCategory = await this.categoryModel.findOne({
@@ -49,7 +52,7 @@ export class CategoriesService {
       slug,
     });
 
-    return  category.save();
+    return category.save();
   }
 
   async findAll(query: QueryCategoryDto) {
@@ -172,10 +175,8 @@ export class CategoriesService {
   }
 
   // Cập nhật số lượng sản phẩm trong category
-  async updateProductCount(
-    categoryId: string,
-    increment: number,
-  ): Promise<void> {
+  async updateProductCount(categoryId: string, increment: number) {
+    if (!Types.ObjectId.isValid(categoryId)) return;
     await this.categoryModel.findByIdAndUpdate(categoryId, {
       $inc: { productCount: increment },
     });
