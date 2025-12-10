@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import { User, UserDocument, UserStatus } from '../users/schemas/user.schema';
 import {
@@ -31,11 +31,7 @@ import {
   CategoryDocument,
   CategoryStatus,
 } from '../categories/schemas/category.schema';
-import {
-  Product,
-  ProductDocument,
-  ProductStatus,
-} from '../products/schemas/product.schema';
+import { Product, ProductDocument } from '../products/schemas/product.schema';
 @Injectable()
 export class SeederService {
   private readonly logger = new Logger(SeederService.name);
@@ -72,7 +68,7 @@ export class SeederService {
       await this.seedSystem();
       await this.seedBrands();
       await this.seedCategories();
-      await this.seedProducts();
+      // await this.seedProducts();
       this.logger.log('Hoàn thành seed dữ liệu!');
     } catch (error) {
       this.logger.error('Lỗi khi seed dữ liệu:', error);
@@ -886,260 +882,101 @@ export class SeederService {
       }
     }
   }
-  private async seedProducts(): Promise<void> {
-    const products = [
-      {
-        _id: new Types.ObjectId(),
-        name: 'iPhone 16 Pro Max 256GB',
-        slug: 'iphone-16-pro-max-256gb',
-        price: 32990000,
-        discount: 10,
-        description:
-          'iPhone 16 Pro Max với hiệu năng mạnh mẽ, camera vượt trội, thiết kế Titanium siêu nhẹ.',
-        shortDescription: 'Flagship cao cấp nhất 2024.',
-        image:
-          'https://cdn2.cellphones.com.vn/insecure/rs:fill:0:0/q:100/plain/https://cellphones.com.vn/media/wysiwyg/Phone/Apple/iphone-16-4.jpg',
-        images: [
-          {
-            url: 'https://cdn-media.sforum.vn/storage/app/media/nhuy/Nhu-Y/hinh-nen-iphone-16-dep-1.jpg',
-            alt: 'Mặt trước iPhone 15 Pro Max',
-            sortOrder: 1,
-          },
-          {
-            url: 'https://cdn-media.sforum.vn/storage/app/media/nhuy/Nhu-Y/hinh-nen-iphone-16-dep-1.jpg',
-            alt: 'Mặt sau iPhone 15 Pro Max',
-            sortOrder: 2,
-          },
-        ],
-        category: '6937c2ff844968d64b005451',
-        brand: '6937bca8a9768d6fc45c665b',
-        stock: 120,
-        status: ProductStatus.ACTIVE,
-        isNew: true,
-        isFeatured: true,
-        isBestSeller: true,
-        specifications: [
-          'Chip Apple A17 Pro',
-          'Màn hình 6.7 inch Super Retina XDR',
-          'Camera 48MP Tele 5x',
-          'Pin 4422mAh',
-        ],
-        warrantyPeriod: 12,
-        sku: 'IP15PM-512-TI',
-        weight: 221,
-        dimensions: {
-          length: 160.8,
-          width: 77.8,
-          height: 7.85,
-        },
-        viewCount: 0,
-        soldCount: 0,
-        reviewCount: 3,
-        averageRating: 5,
-        tags: ['iphone', 'apple', 'flagship'],
-        sortOrder: 1,
-        isDeleted: false,
-        reviews: [
-          {
-            rating: 5,
-            comment: 'rất hài lòng!',
-            user: '6915e28d7c72b6f33b8819bc',
-            type: 'Chưa mua hàng',
-            images: [
-              'https://blog.abit.vn/wp-content/uploads/2020/06/danh-gia-5-sao-1.jpg',
-            ],
-            replies: [
-              {
-                comment: 'Cảm ơn bạn nhiều nhé',
-                user: '6915e28c7c72b6f33b8819b7',
-                isAdmin: true,
-                _id: new Types.ObjectId(),
-                createdAt: new Date(),
-                updatedAt: new Date(),
-              },
-            ],
-            isApproved: true,
-            _id: new Types.ObjectId(),
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          },
-        ],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        __v: 12,
-        finalPrice: 29691000,
-        id: new Types.ObjectId(),
-      },
-      {
-        _id: new Types.ObjectId(),
-        name: 'Samsung Galaxy S24 Ultra 256GB',
-        slug: 'samsung-galaxy-s24-ultra-256gb',
-        price: 32990000,
-        discount: 10,
-        description:
-          'Samsung Galaxy S24 Ultra với hiệu năng mạnh mẽ, camera vượt trội, thiết kế Titanium siêu nhẹ.',
-        shortDescription: 'Flagship cao cấp nhất 2024.',
-        image:
-          'https://i.ytimg.com/vi/3i1OB6wKYms/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLBP44tQi1uE9_3LF7oEOZPdduyMJw',
-        images: [
-          {
-            url: 'https://static0.pocketlintimages.com/wordpress/wp-content/uploads/wm/2025/01/galaxy-s25-ultra-header-1.jpg?w=1600&h=900&fit=crop',
-            alt: 'Mặt trước Samsung Galaxy S24 Ultra',
-            sortOrder: 1,
-          },
-          {
-            url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbGy9cX3-uv_IjN8ctFbi9YpkA7V_y0J3yHQ&s',
-            alt: 'Mặt sau Samsung Galaxy S24 Ultra',
-            sortOrder: 2,
-          },
-        ],
-        category: '6937c2ff844968d64b005451',
-        brand: '6937bca8a9768d6fc45c665e',
-        stock: 120,
-        status: ProductStatus.ACTIVE,
-        isNew: true,
-        isFeatured: true,
-        isBestSeller: true,
-        specifications: [
-          'Chip Apple A17 Pro',
-          'Màn hình 6.7 inch Super Retina XDR',
-          'Camera 48MP Tele 5x',
-          'Pin 4422mAh',
-        ],
-        warrantyPeriod: 12,
-        sku: 'S24U-256-TI',
-        weight: 221,
-        dimensions: {
-          length: 160.8,
-          width: 77.8,
-          height: 7.85,
-        },
-        viewCount: 0,
-        soldCount: 0,
-        reviewCount: 3,
-        averageRating: 5,
-        tags: ['samsung', 'galaxy', 's24 ultra'],
-        sortOrder: 1,
-        isDeleted: false,
-        reviews: [
-          {
-            rating: 5,
-            comment: 'Sản phẩm đẹp quá, màn hình sắc nét, camera chụp rất đẹp!',
-            user: '6915e28d7c72b6f33b8819bc',
-            type: 'Đã mua hàng',
-            images: [
-              'https://blog.abit.vn/wp-content/uploads/2020/06/danh-gia-5-sao-1.jpg',
-            ],
-            replies: [
-              {
-                comment: 'Cảm ơn bạn đã mua hàng!',
-                user: '6915e28c7c72b6f33b8819b7',
-                isAdmin: true,
-                _id: new Types.ObjectId(),
-                createdAt: new Date(),
-                updatedAt: new Date(),
-              },
-            ],
-            isApproved: true,
-            _id: new Types.ObjectId(),
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          },
-        ],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        __v: 12,
-        finalPrice: 12990000,
-        id: new Types.ObjectId(),
-      },
-      {
-        _id: new Types.ObjectId(),
-        name: 'Camera Canon EOS HP',
-        slug: 'camera-canon-eos-hp',
-        price: 12990000,
-        discount: 30,
-        description:
-          'Camera Canon EOS HP với hiệu năng mạnh mẽ, camera vượt trội, thiết kế Titanium siêu nhẹ.',
-        shortDescription: 'Camera cao cấp nhất 2025.',
-        image:
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRp4iH-uLXULYFUuhTfGxksq6y6fngUFyIsTg&s',
-        images: [
-          {
-            url: 'https://carcam.vn/mediacenter/media/images/2071/pr…047700865025874764399284353236992n-1571046351.jpg',
-            alt: 'Mặt trước Camera Canon EOS HP',
-            sortOrder: 1,
-          },
-          {
-            url: 'https://carcam.vn/mediacenter/media/images/2071/pr…881313347929606303404813765836800n-1571046351.jpg',
-            alt: 'Mặt sau Camera Canon EOS HP',
-            sortOrder: 2,
-          },
-        ],
-        category: '6937c300844968d64b005460',
-        brand: '6937bca9a9768d6fc45c6676',
-        stock: 120,
-        status: ProductStatus.ACTIVE,
-        isNew: true,
-        isFeatured: true,
-        isBestSeller: true,
-        specifications: ['Camera 48MP Tele 5x', 'ISO 100-6400', 'Video 4K 60p'],
-        warrantyPeriod: 12,
-        sku: 'C-EOS-HP-128',
-        weight: 221,
-        dimensions: {
-          length: 160.8,
-          width: 77.8,
-          height: 7.85,
-        },
-        viewCount: 0,
-        soldCount: 0,
-        reviewCount: 3,
-        averageRating: 5,
-        tags: ['canon', 'eos', 'hp'],
-        sortOrder: 1,
-        isDeleted: false,
-        reviews: [
-          {
-            rating: 5,
-            comment: 'Camera chụp rất đẹp, chất lượng ảnh rất tốt!',
-            user: '6915e28d7c72b6f33b8819bc',
-            type: 'Đã mua hàng',
-            images: [
-              'https://blog.abit.vn/wp-content/uploads/2020/06/danh-gia-5-sao-1.jpg',
-            ],
-            replies: [
-              {
-                comment: 'Cảm ơn bạn đã đánh giá!',
-                user: '6915e28c7c72b6f33b8819b7',
-                isAdmin: true,
-                _id: new Types.ObjectId(),
-                createdAt: new Date(),
-                updatedAt: new Date(),
-              },
-            ],
-            isApproved: true,
-            _id: new Types.ObjectId(),
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          },
-        ],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        __v: 12,
-        finalPrice: 29691000,
-        id: new Types.ObjectId(),
-      },
-    ];
-    for (const product of products) {
-      const existingProduct = await this.productModel.findOne({
-        name: product.name,
-      });
-      if (!existingProduct) {
-        await this.productModel.create(product);
-        this.logger.log(`Đã tạo product: ${product.name}`);
-      } else {
-        this.logger.log(`Product đã tồn tại: ${product.name}`);
-      }
-    }
-  }
+  // private async seedProducts(): Promise<void> {
+  //   const products = [
+  //     {
+  //       _id: new Types.ObjectId(),
+  //       name: 'iPhone 16 Pro Max 256GB',
+  //       slug: 'iphone-16-pro-max-256gb',
+  //       price: 32990000,
+  //       discount: 10,
+  //       description:
+  //         'iPhone 16 Pro Max với hiệu năng mạnh mẽ, camera vượt trội, thiết kế Titanium siêu nhẹ.',
+  //       shortDescription: 'Flagship cao cấp nhất 2024.',
+  //       image:
+  //         'https://cdn2.cellphones.com.vn/insecure/rs:fill:0:0/q:100/plain/https://cellphones.com.vn/media/wysiwyg/Phone/Apple/iphone-16-4.jpg',
+  //       images: [
+  //         {
+  //           url: 'https://cdn-media.sforum.vn/storage/app/media/nhuy/Nhu-Y/hinh-nen-iphone-16-dep-1.jpg',
+  //           alt: 'Mặt trước iPhone 15 Pro Max',
+  //           sortOrder: 1,
+  //         },
+  //         {
+  //           url: 'https://cdn-media.sforum.vn/storage/app/media/nhuy/Nhu-Y/hinh-nen-iphone-16-dep-1.jpg',
+  //           alt: 'Mặt sau iPhone 15 Pro Max',
+  //           sortOrder: 2,
+  //         },
+  //       ],
+  //       category: '6937c2ff844968d64b005451',
+  //       brand: '6937bca8a9768d6fc45c665b',
+  //       stock: 120,
+  //       status: ProductStatus.ACTIVE,
+  //       isNew: true,
+  //       isFeatured: true,
+  //       isBestSeller: true,
+  //       specifications: [
+  //         'Chip Apple A17 Pro',
+  //         'Màn hình 6.7 inch Super Retina XDR',
+  //         'Camera 48MP Tele 5x',
+  //         'Pin 4422mAh',
+  //       ],
+  //       warrantyPeriod: 12,
+  //       sku: 'IP15PM-512-TI',
+  //       weight: 221,
+  //       dimensions: {
+  //         length: 160.8,
+  //         width: 77.8,
+  //         height: 7.85,
+  //       },
+  //       viewCount: 0,
+  //       soldCount: 0,
+  //       reviewCount: 3,
+  //       averageRating: 5,
+  //       tags: ['iphone', 'apple', 'flagship'],
+  //       sortOrder: 1,
+  //       isDeleted: false,
+  //       reviews: [
+  //         {
+  //           rating: 5,
+  //           comment: 'rất hài lòng!',
+  //           user: '6915e28d7c72b6f33b8819bc',
+  //           type: 'Chưa mua hàng',
+  //           images: [
+  //             'https://blog.abit.vn/wp-content/uploads/2020/06/danh-gia-5-sao-1.jpg',
+  //           ],
+  //           replies: [
+  //             {
+  //               comment: 'Cảm ơn bạn nhiều nhé',
+  //               user: '6915e28c7c72b6f33b8819b7',
+  //               isAdmin: true,
+  //               _id: new Types.ObjectId(),
+  //               createdAt: new Date(),
+  //               updatedAt: new Date(),
+  //             },
+  //           ],
+  //           isApproved: true,
+  //           _id: new Types.ObjectId(),
+  //           createdAt: new Date(),
+  //           updatedAt: new Date(),
+  //         },
+  //       ],
+  //       createdAt: new Date(),
+  //       updatedAt: new Date(),
+  //       __v: 12,
+  //       finalPrice: 29691000,
+  //       id: new Types.ObjectId(),
+  //     },
+  //   ];
+  //   for (const product of products) {
+  //     const existingProduct = await this.productModel.findOne({
+  //       name: product.name,
+  //     });
+  //     if (!existingProduct) {
+  //       await this.productModel.create(product);
+  //       this.logger.log(`Đã tạo product: ${product.name}`);
+  //     } else {
+  //       this.logger.log(`Product đã tồn tại: ${product.name}`);
+  //     }
+  //   }
+  // }
 }
