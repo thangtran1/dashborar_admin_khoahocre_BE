@@ -424,8 +424,6 @@ export class ProductsService {
   async addReview(
     productId: string,
     userId: string,
-    userName: string,
-    userAvatar: string | undefined,
     hasPurchased: boolean,
     createReviewDto: CreateReviewDto,
   ): Promise<ProductDocument> {
@@ -435,8 +433,6 @@ export class ProductsService {
       rating: createReviewDto.rating,
       comment: createReviewDto.comment,
       user: new Types.ObjectId(userId),
-      userName,
-      userAvatar,
       type: hasPurchased ? 'Đã mua hàng' : 'Chưa mua hàng',
       images: createReviewDto.images || [],
       replies: [],
@@ -451,7 +447,15 @@ export class ProductsService {
     product.averageRating =
       Math.round((totalRating / product.reviews.length) * 10) / 10;
 
-    return product.save();
+    await product.save();
+
+    // Populate user trong review
+    const populatedProduct = await this.productModel
+      .findById(product._id)
+      .populate('reviews.user', 'name avatar') // chỉ lấy name + avatar
+      .exec();
+
+    return populatedProduct!;
   }
 
   async replyToReview(

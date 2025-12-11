@@ -30,7 +30,9 @@ export class ProductsController {
   // Lấy sản phẩm nổi bật
   @Get('featured')
   async getFeaturedProducts(@Query('limit') limit?: string) {
-    const featuredProducts = await this.productsService.getFeaturedProducts(limit ? parseInt(limit) : 10);
+    const featuredProducts = await this.productsService.getFeaturedProducts(
+      limit ? parseInt(limit) : 10,
+    );
     if (!featuredProducts) {
       throw new NotFoundException('Không tìm thấy sản phẩm nổi bật');
     }
@@ -38,13 +40,15 @@ export class ProductsController {
       success: true,
       message: 'Lấy sản phẩm nổi bật thành công',
       data: featuredProducts,
-    }
+    };
   }
 
   // Lấy sản phẩm mới
   @Get('new')
   async getNewProducts(@Query('limit') limit?: string) {
-    const newProducts = await this.productsService.getNewProducts(limit ? parseInt(limit) : 10);
+    const newProducts = await this.productsService.getNewProducts(
+      limit ? parseInt(limit) : 10,
+    );
     if (!newProducts || newProducts.length === 0) {
       throw new NotFoundException('Không tìm thấy sản phẩm mới');
     }
@@ -52,13 +56,15 @@ export class ProductsController {
       success: true,
       message: 'Lấy sản phẩm mới thành công',
       data: newProducts,
-    }
+    };
   }
 
   // Lấy sản phẩm bán chạy
   @Get('best-sellers')
   async getBestSellers(@Query('limit') limit?: string) {
-    const bestSellers = await this.productsService.getBestSellers(limit ? parseInt(limit) : 10);
+    const bestSellers = await this.productsService.getBestSellers(
+      limit ? parseInt(limit) : 10,
+    );
     if (!bestSellers || bestSellers.length === 0) {
       throw new NotFoundException('Không tìm thấy sản phẩm bán chạy');
     }
@@ -66,13 +72,15 @@ export class ProductsController {
       success: true,
       message: 'Lấy sản phẩm bán chạy thành công',
       data: bestSellers,
-    }
+    };
   }
 
   // Lấy sản phẩm deal
   @Get('deals')
   async getDealProducts(@Query('limit') limit?: string) {
-    const dealProducts = await this.productsService.getDealProducts(limit ? parseInt(limit) : 10);
+    const dealProducts = await this.productsService.getDealProducts(
+      limit ? parseInt(limit) : 10,
+    );
     if (!dealProducts || dealProducts.length === 0) {
       throw new NotFoundException('Không tìm thấy sản phẩm deal');
     }
@@ -80,7 +88,7 @@ export class ProductsController {
       success: true,
       message: 'Lấy sản phẩm deal thành công',
       data: dealProducts,
-    }
+    };
   }
 
   // Lấy product theo slug (Public)
@@ -94,7 +102,7 @@ export class ProductsController {
       success: true,
       message: 'Lấy sản phẩm theo slug thành công',
       data: product,
-    }
+    };
   }
 
   // Lấy sản phẩm theo category slug
@@ -102,8 +110,11 @@ export class ProductsController {
   async getProductsByCategory(
     @Param('categorySlug') categorySlug: string,
     @Query() query: QueryProductDto,
-      ) {
-    const products = await this.productsService.getProductsByCategory(categorySlug, query);
+  ) {
+    const products = await this.productsService.getProductsByCategory(
+      categorySlug,
+      query,
+    );
     if (!products) {
       throw new NotFoundException('Không tìm thấy sản phẩm theo category');
     }
@@ -111,7 +122,7 @@ export class ProductsController {
       success: true,
       message: 'Lấy sản phẩm theo category thành công',
       data: products,
-    }
+    };
   }
 
   // Lấy sản phẩm theo brand slug
@@ -120,7 +131,10 @@ export class ProductsController {
     @Param('brandSlug') brandSlug: string,
     @Query() query: QueryProductDto,
   ) {
-    const products = await this.productsService.getProductsByBrand(brandSlug, query);
+    const products = await this.productsService.getProductsByBrand(
+      brandSlug,
+      query,
+    );
     if (!products) {
       throw new NotFoundException('Không tìm thấy sản phẩm theo brand');
     }
@@ -128,7 +142,7 @@ export class ProductsController {
       success: true,
       message: 'Lấy sản phẩm theo brand thành công',
       data: products,
-    }
+    };
   }
 
   // Lấy sản phẩm liên quan
@@ -137,7 +151,10 @@ export class ProductsController {
     @Param('id') id: string,
     @Query('limit') limit?: string,
   ) {
-    const products = await this.productsService.getRelatedProducts(id, limit ? parseInt(limit) : 6);
+    const products = await this.productsService.getRelatedProducts(
+      id,
+      limit ? parseInt(limit) : 6,
+    );
     if (!products) {
       throw new NotFoundException('Không tìm thấy sản phẩm liên quan');
     }
@@ -145,7 +162,7 @@ export class ProductsController {
       success: true,
       message: 'Lấy sản phẩm liên quan thành công',
       data: products,
-    }
+    };
   }
 
   // ============ ADMIN ENDPOINTS ============
@@ -163,7 +180,7 @@ export class ProductsController {
       success: true,
       message: 'Tạo sản phẩm mới thành công',
       data: product,
-    }
+    };
   }
 
   // Lấy danh sách products (Admin - có phân trang, filter)
@@ -171,7 +188,7 @@ export class ProductsController {
   // @UseGuards(JwtAuthGuard, RolesGuard)
   // @Roles('admin')
   async findAll(@Query() query: QueryProductDto) {
-      const products = await this.productsService.findAll(query);
+    const products = await this.productsService.findAll(query);
     if (!products) {
       throw new NotFoundException('Không tìm thấy danh sách sản phẩm');
     }
@@ -179,7 +196,7 @@ export class ProductsController {
       success: true,
       message: 'Lấy danh sách sản phẩm thành công',
       data: products,
-    }
+    };
   }
 
   // Lấy chi tiết product theo ID
@@ -195,14 +212,17 @@ export class ProductsController {
       success: true,
       message: 'Lấy sản phẩm theo ID thành công',
       data: product,
-    }
+    };
   }
 
   // Cập nhật product
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  async update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateProductDto: UpdateProductDto,
+  ) {
     const product = await this.productsService.update(id, updateProductDto);
     if (!product) {
       throw new NotFoundException('Không tìm thấy sản phẩm theo ID');
@@ -211,7 +231,7 @@ export class ProductsController {
       success: true,
       message: 'Cập nhật sản phẩm thành công',
       data: product,
-    }
+    };
   }
 
   // Xóa product (soft delete)
@@ -226,7 +246,7 @@ export class ProductsController {
     return {
       success: true,
       message: 'Xóa sản phẩm thành công',
-    }
+    };
   }
 
   // ============ REVIEW ENDPOINTS ============
@@ -236,26 +256,22 @@ export class ProductsController {
   @UseGuards(JwtAuthGuard)
   async addReview(
     @Param('id') productId: string,
-    @Req() request: Request & { user: { id: string; name: string; avatar: string | undefined } },
+    @Req() request: Request & { user: { id: string } },
     @Body() createReviewDto: CreateReviewDto,
   ) {
     const user = request.user;
-    const review = await this.productsService.addReview(
+    const product = await this.productsService.addReview(
       productId,
       user.id,
-      user.name,
-      user.avatar,
-      false, // TODO: Check if user has purchased this product
+      false, // TODO: check if purchased
       createReviewDto,
     );
-    if (!review) {
-      throw new NotFoundException('Không tìm thấy review');
-    }
+
     return {
       success: true,
       message: 'Thêm review thành công',
-      data: review,
-    }
+      data: product,
+    };
   }
 
   // Reply review
@@ -264,7 +280,15 @@ export class ProductsController {
   async replyToReview(
     @Param('productId') productId: string,
     @Param('reviewId') reviewId: string,
-    @Req() request: Request & { user: { id: string; name: string; avatar: string | undefined; role: string } },
+    @Req()
+    request: Request & {
+      user: {
+        id: string;
+        name: string;
+        avatar: string | undefined;
+        role: string;
+      };
+    },
     @Body() replyDto: ReplyReviewDto,
   ) {
     const user = request.user;
@@ -284,7 +308,7 @@ export class ProductsController {
       success: true,
       message: 'Phản hồi review thành công',
       data: review,
-    }
+    };
   }
 
   // Approve review (Admin only)
@@ -295,7 +319,10 @@ export class ProductsController {
     @Param('productId') productId: string,
     @Param('reviewId') reviewId: string,
   ) {
-    const review = await this.productsService.approveReview(productId, reviewId);
+    const review = await this.productsService.approveReview(
+      productId,
+      reviewId,
+    );
     if (!review) {
       throw new NotFoundException('Không tìm thấy review');
     }
@@ -303,7 +330,7 @@ export class ProductsController {
       success: true,
       message: 'Phản hồi review thành công',
       data: review,
-    }
+    };
   }
 
   // Delete review (Admin only)
@@ -322,6 +349,6 @@ export class ProductsController {
       success: true,
       message: 'Xóa review thành công',
       data: review,
-    }
+    };
   }
 }

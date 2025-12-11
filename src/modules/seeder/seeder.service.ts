@@ -68,7 +68,7 @@ export class SeederService {
       await this.seedSystem();
       await this.seedBrands();
       await this.seedCategories();
-      // await this.seedProducts();
+      await this.seedProducts();
       this.logger.log('Hoàn thành seed dữ liệu!');
     } catch (error) {
       this.logger.error('Lỗi khi seed dữ liệu:', error);
@@ -680,6 +680,7 @@ export class SeederService {
         website: 'https://www.apple.com',
         status: BrandStatus.ACTIVE,
         sortOrder: 2,
+        productCount: 1,
         isFeatured: true,
       },
       {
@@ -691,6 +692,7 @@ export class SeederService {
         website: 'https://www.mi.com',
         status: BrandStatus.ACTIVE,
         sortOrder: 3,
+        productCount: 1,
         isFeatured: false,
       },
       {
@@ -753,6 +755,7 @@ export class SeederService {
         website: 'https://www.dell.com',
         status: BrandStatus.ACTIVE,
         sortOrder: 9,
+        productCount: 1,
         isFeatured: false,
       },
       {
@@ -787,6 +790,7 @@ export class SeederService {
         image:
           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRswe__RSY0NpJSkmZdQiFj2WsbKbfFV6P7sg&s',
         status: CategoryStatus.ACTIVE,
+        productCount: 1,
         sortOrder: 1,
       },
       {
@@ -795,6 +799,7 @@ export class SeederService {
         description: 'Máy tính xách tay từ các thương hiệu hàng đầu',
         image: 'https://cdn-icons-png.flaticon.com/512/2910/2910767.png',
         status: CategoryStatus.ACTIVE,
+        productCount: 1,
         sortOrder: 2,
       },
       {
@@ -831,6 +836,7 @@ export class SeederService {
         image:
           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZy087-QqhfvEkTvzM2_pda0cBGObwDBkbJA&s',
         status: CategoryStatus.ACTIVE,
+        productCount: 1,
         sortOrder: 6,
       },
       {
@@ -882,101 +888,205 @@ export class SeederService {
       }
     }
   }
-  // private async seedProducts(): Promise<void> {
-  //   const products = [
-  //     {
-  //       _id: new Types.ObjectId(),
-  //       name: 'iPhone 16 Pro Max 256GB',
-  //       slug: 'iphone-16-pro-max-256gb',
-  //       price: 32990000,
-  //       discount: 10,
-  //       description:
-  //         'iPhone 16 Pro Max với hiệu năng mạnh mẽ, camera vượt trội, thiết kế Titanium siêu nhẹ.',
-  //       shortDescription: 'Flagship cao cấp nhất 2024.',
-  //       image:
-  //         'https://cdn2.cellphones.com.vn/insecure/rs:fill:0:0/q:100/plain/https://cellphones.com.vn/media/wysiwyg/Phone/Apple/iphone-16-4.jpg',
-  //       images: [
-  //         {
-  //           url: 'https://cdn-media.sforum.vn/storage/app/media/nhuy/Nhu-Y/hinh-nen-iphone-16-dep-1.jpg',
-  //           alt: 'Mặt trước iPhone 15 Pro Max',
-  //           sortOrder: 1,
-  //         },
-  //         {
-  //           url: 'https://cdn-media.sforum.vn/storage/app/media/nhuy/Nhu-Y/hinh-nen-iphone-16-dep-1.jpg',
-  //           alt: 'Mặt sau iPhone 15 Pro Max',
-  //           sortOrder: 2,
-  //         },
-  //       ],
-  //       category: '6937c2ff844968d64b005451',
-  //       brand: '6937bca8a9768d6fc45c665b',
-  //       stock: 120,
-  //       status: ProductStatus.ACTIVE,
-  //       isNew: true,
-  //       isFeatured: true,
-  //       isBestSeller: true,
-  //       specifications: [
-  //         'Chip Apple A17 Pro',
-  //         'Màn hình 6.7 inch Super Retina XDR',
-  //         'Camera 48MP Tele 5x',
-  //         'Pin 4422mAh',
-  //       ],
-  //       warrantyPeriod: 12,
-  //       sku: 'IP15PM-512-TI',
-  //       weight: 221,
-  //       dimensions: {
-  //         length: 160.8,
-  //         width: 77.8,
-  //         height: 7.85,
-  //       },
-  //       viewCount: 0,
-  //       soldCount: 0,
-  //       reviewCount: 3,
-  //       averageRating: 5,
-  //       tags: ['iphone', 'apple', 'flagship'],
-  //       sortOrder: 1,
-  //       isDeleted: false,
-  //       reviews: [
-  //         {
-  //           rating: 5,
-  //           comment: 'rất hài lòng!',
-  //           user: '6915e28d7c72b6f33b8819bc',
-  //           type: 'Chưa mua hàng',
-  //           images: [
-  //             'https://blog.abit.vn/wp-content/uploads/2020/06/danh-gia-5-sao-1.jpg',
-  //           ],
-  //           replies: [
-  //             {
-  //               comment: 'Cảm ơn bạn nhiều nhé',
-  //               user: '6915e28c7c72b6f33b8819b7',
-  //               isAdmin: true,
-  //               _id: new Types.ObjectId(),
-  //               createdAt: new Date(),
-  //               updatedAt: new Date(),
-  //             },
-  //           ],
-  //           isApproved: true,
-  //           _id: new Types.ObjectId(),
-  //           createdAt: new Date(),
-  //           updatedAt: new Date(),
-  //         },
-  //       ],
-  //       createdAt: new Date(),
-  //       updatedAt: new Date(),
-  //       __v: 12,
-  //       finalPrice: 29691000,
-  //       id: new Types.ObjectId(),
-  //     },
-  //   ];
-  //   for (const product of products) {
-  //     const existingProduct = await this.productModel.findOne({
-  //       name: product.name,
-  //     });
-  //     if (!existingProduct) {
-  //       await this.productModel.create(product);
-  //       this.logger.log(`Đã tạo product: ${product.name}`);
-  //     } else {
-  //       this.logger.log(`Product đã tồn tại: ${product.name}`);
-  //     }
-  //   }
-  // }
+  private async seedProducts(): Promise<void> {
+    const products = [
+      {
+        name: 'iPhone 16 Pro Max 512GB',
+        slug: 'iphone-16-pro-max-512gb',
+        price: 26900000,
+        discount: 5,
+        description:
+          'iPhone 16 Pro Max với hiệu năng mạnh mẽ, camera vượt trội, thiết kế Titanium siêu nhẹ.',
+        shortDescription:
+          'Camera chính: 48MP, f/1.78, 24mm, 2µm, chống rung quang học dịch chuyển cảm biến thế hệ thứ hai, Focus Pixels 100%',
+        image:
+          'https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-16-pro-max_1.png',
+        images: [
+          {
+            url: 'https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-16-pro-max-2_1.png',
+            sortOrder: 1,
+          },
+          {
+            url: 'https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-16-pro-max-3_1.png',
+            sortOrder: 2,
+          },
+          {
+            url: 'https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-16-pro-max-4_1.png',
+            sortOrder: 3,
+          },
+          {
+            url: 'https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-16-pro-max-5_1.png',
+            sortOrder: 4,
+          },
+        ],
+        category: '6939139e05cc533e00ed03d3',
+        brand: '6939139d05cc533e00ed03b8',
+        stock: 29,
+        status: 'active',
+        isNew: true,
+        isFeatured: true,
+        isBestSeller: true,
+        specifications: [
+          '6.3 inches',
+          'Super Retina XDR OLED',
+          '12MP, ƒ/1.9, Tự động lấy nét theo pha Focus Pixels',
+          'Apple A18 Pro',
+          'CPU 6 lõi mới với 2 lõi hiệu năng và 4 lõi tiết kiệm điện',
+          'Tương Thích Với Thiết Bị Trợ Thính',
+        ],
+        warrantyPeriod: 12,
+        sku: 'SP_001',
+        weight: 2,
+        dimensions: {
+          length: 5,
+          width: 2,
+          height: 4,
+        },
+        tags: ['flagship', '256gb', 'apple', 'titanium'],
+        sortOrder: 0,
+      },
+      {
+        name: 'Laptop Dell Inspiron 14 5440 D0F3W - Nhập khẩu chính hãng',
+        slug: 'laptop-dell-inspiron-14-5440-d0f3w-nhap-khau-chinh-hang',
+        price: 16900000,
+        discount: 5,
+        description:
+          'iPhone 16 Pro Max với hiệu năng mạnh mẽ, camera vượt trội, thiết kế Titanium siêu nhẹ.',
+        shortDescription:
+          'Camera chính: 48MP, f/1.78, 24mm, 2µm, chống rung quang học dịch chuyển cảm biến thế hệ thứ hai, Focus Pixels 100%',
+        image:
+          'https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/t/e/text_ng_n_3__7_221.png',
+        images: [
+          {
+            url: 'https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/t/e/text_ng_n_4__7_276.png',
+            sortOrder: 1,
+          },
+          {
+            url: 'https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/t/e/text_ng_n_6__4_240.png',
+            sortOrder: 2,
+          },
+          {
+            url: 'https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/t/e/text_ng_n_5__9_270.png',
+            sortOrder: 3,
+          },
+          {
+            url: 'https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/l/a/laptop_dell_inspiron_14_5440_d0f3w_-_1.png',
+            sortOrder: 4,
+          },
+          {
+            url: 'https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/l/a/laptop_dell_inspiron_14_5440_d0f3w_-_2.png',
+            sortOrder: 5,
+          },
+          {
+            url: 'https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/l/a/laptop_dell_inspiron_14_5440_d0f3w_-_3.png',
+            sortOrder: 6,
+          },
+        ],
+        category: '6939139e05cc533e00ed03d6',
+        brand: '6939139e05cc533e00ed03cd',
+        stock: 20,
+        status: 'active',
+        isNew: true,
+        isFeatured: true,
+        isBestSeller: false,
+        specifications: [
+          '24GB',
+          'DDR5 ( 4400 MT/s )',
+          '2 khe (8GB+16GB, tối đa 32GB)',
+          '1 khe tối đa 1TB',
+          'Intel UMA Graphics',
+          'Intel Core i5-1334U thế hệ thứ 13 / 10 nhân 12 luồng / up to 4.6 GHz, 12MB',
+        ],
+
+        warrantyPeriod: 12,
+        sku: 'SP_002',
+        weight: 4,
+        dimensions: {
+          length: 31.4,
+          width: 22.615,
+          height: 1.81,
+        },
+
+        tags: [
+          '#DellInspiron14',
+          '#Dell5440',
+          '#LaptopVănPhòng',
+          '#LaptopHọcTập',
+          '#LaptopMỏngNhẹ',
+          '#IntelCorei5',
+          '#SSDNVMe',
+        ],
+        sortOrder: 0,
+      },
+      {
+        name: 'Camera IP 360 độ 3MP Xiaomi Mi Home Security C301',
+        slug: 'camera-ip-360-o-3mp-xiaomi-mi-home-security-c301',
+        price: 860000,
+        discount: 18,
+        description:
+          'Độ phân giải camera 3MP chất lượng, ghi lại video với độ nét cao, đủ rõ ràng để phát hiện và ghi lại các chi tiết.\nCamera có tầm quan sát rộng, có thể bao phù được toàn bộ không gian trong nhà.\nDễ dàng kết nối camera với mạng wifi gia đình và lưu trữ video lên đám mây để truy cập từ xa',
+        shortDescription:
+          'Camera có kiểu dáng nhỏ, tối giản và sang trọng với màu trắng tinh khôi',
+        image:
+          'https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/c/a/camera-xiaomi-mi-home-security-c301-3mp_-_1.png',
+        images: [
+          {
+            url: 'https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/t/e/text_ng_n_65__1_4.png',
+            sortOrder: 1,
+          },
+          {
+            url: 'https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/t/e/text_ng_n_67__1_4.png',
+            sortOrder: 2,
+          },
+          {
+            url: 'https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/t/e/text_ng_n_68__1_5.png',
+            sortOrder: 3,
+          },
+          {
+            url: 'https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/t/e/text_ng_n_66__1_4.png',
+            sortOrder: 4,
+          },
+          {
+            url: 'https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/t/e/text_ng_n_63__1_4.png',
+            sortOrder: 5,
+          },
+        ],
+        category: '6939139e05cc533e00ed03e2',
+        brand: '6939139d05cc533e00ed03bb',
+        stock: 72,
+        status: 'active',
+        isNew: true,
+        isFeatured: true,
+        isBestSeller: false,
+        specifications: [
+          'Camera trong nhà',
+          '3MP (2304 × 1296 px)',
+          'Khẩu độ lớn cùng ống kính 4P',
+          '360 độ ngang 107 độ dọc',
+        ],
+
+        warrantyPeriod: 12,
+        sku: 'SP_003',
+        weight: 3,
+        dimensions: {
+          length: 6,
+          width: 2,
+          height: 7,
+        },
+        tags: ['Xiaomi'],
+        sortOrder: 0,
+      },
+    ];
+    for (const product of products) {
+      const existingProduct = await this.productModel.findOne({
+        name: product.name,
+      });
+      if (!existingProduct) {
+        await this.productModel.create(product);
+        this.logger.log(`Đã tạo product: ${product.name}`);
+      } else {
+        this.logger.log(`Product đã tồn tại: ${product.name}`);
+      }
+    }
+  }
 }
