@@ -1,7 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { Category } from '../../categories/schemas/category.schema';
-import { Brand } from '../../brands/schemas/brand.schema';
 
 export type ProductDocument = Product &
   Document & { _id: Types.ObjectId; createdAt: Date; updatedAt: Date };

@@ -167,6 +167,7 @@ export class ProductsService {
         .find(filter)
         .populate('category', 'name slug')
         .populate('brand', 'name slug logo')
+        .populate('reviews.user', 'name avatar')
         .sort(sort)
         .skip((page - 1) * limit)
         .limit(limit)
@@ -341,7 +342,7 @@ export class ProductsService {
     return this.productModel
       .find({ status: 'active', isDeleted: false, isFeatured: true })
       .populate('category', 'name slug')
-      .populate('brand', 'name slug logo')
+      .populate('reviews.user', 'name avatar')
       .sort({ sortOrder: 1, createdAt: -1 })
       .limit(limit)
       .exec();
@@ -352,6 +353,7 @@ export class ProductsService {
       .find({ status: 'active', isDeleted: false, isNew: true })
       .populate('category', 'name slug')
       .populate('brand', 'name slug logo')
+      .populate('reviews.user', 'name avatar')
       .sort({ createdAt: -1 })
       .limit(limit)
       .exec();
@@ -362,6 +364,7 @@ export class ProductsService {
       .find({ status: 'active', isDeleted: false, isBestSeller: true })
       .populate('category', 'name slug')
       .populate('brand', 'name slug logo')
+      .populate('reviews.user', 'name avatar')
       .sort({ soldCount: -1 })
       .limit(limit)
       .exec();
@@ -376,6 +379,7 @@ export class ProductsService {
       })
       .populate('category', 'name slug')
       .populate('brand', 'name slug logo')
+      .populate('reviews.user', 'name avatar')
       .sort({ discount: -1 })
       .limit(limit)
       .exec();
@@ -418,6 +422,7 @@ export class ProductsService {
       })
       .populate('category', 'name slug')
       .populate('brand', 'name slug logo')
+      .populate('reviews.user', 'name avatar')
       .limit(limit)
       .exec();
   }
