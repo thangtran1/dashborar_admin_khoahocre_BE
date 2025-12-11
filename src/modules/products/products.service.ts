@@ -402,6 +402,9 @@ export class ProductsService {
     limit: number = 6,
   ): Promise<ProductDocument[]> {
     const product = await this.findOne(productId);
+    if (!product) {
+      throw new NotFoundException('Sản phẩm không tồn tại');
+    }
 
     return this.productModel
       .find({
@@ -409,8 +412,8 @@ export class ProductsService {
         isDeleted: false,
         _id: { $ne: productId },
         $or: [
-          { category: product.category._id || product.category },
-          { brand: product.brand._id || product.brand },
+          { category: product.category?._id || product.category },
+          { brand: product.brand?._id || product.brand },
         ],
       })
       .populate('category', 'name slug')
