@@ -168,8 +168,8 @@ export class ProductsController {
 
   // Lấy danh sách products (Admin - có phân trang, filter)
   @Get()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Roles('admin')
   async findAll(@Query() query: QueryProductDto) {
       const products = await this.productsService.findAll(query);
     if (!products) {
