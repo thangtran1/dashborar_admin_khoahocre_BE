@@ -168,6 +168,7 @@ export class ProductsService {
         .populate('category', 'name slug')
         .populate('brand', 'name slug logo')
         .populate('reviews.user', 'name avatar')
+        .populate('reviews.replies.user', 'name avatar')
         .sort(sort)
         .skip((page - 1) * limit)
         .limit(limit)
@@ -198,7 +199,8 @@ export class ProductsService {
       })
       .populate('category', 'name slug description')
       .populate('brand', 'name slug logo description')
-      .populate('reviews.user', 'name avatar');
+      .populate('reviews.user', 'name avatar')
+      .populate('reviews.replies.user', 'name avatar');
 
     if (!product) {
       throw new NotFoundException('Product không tồn tại');
@@ -215,7 +217,8 @@ export class ProductsService {
       })
       .populate('category', 'name slug description')
       .populate('brand', 'name slug logo description')
-      .populate('reviews.user', 'name avatar');
+      .populate('reviews.user', 'name avatar')
+      .populate('reviews.replies.user', 'name avatar');
 
     if (!product) {
       throw new NotFoundException('Product không tồn tại');
@@ -345,6 +348,7 @@ export class ProductsService {
       .find({ status: 'active', isDeleted: false, isFeatured: true })
       .populate('category', 'name slug')
       .populate('reviews.user', 'name avatar')
+      .populate('reviews.replies.user', 'name avatar')
       .sort({ sortOrder: 1, createdAt: -1 })
       .limit(limit)
       .exec();
@@ -356,6 +360,7 @@ export class ProductsService {
       .populate('category', 'name slug')
       .populate('brand', 'name slug logo')
       .populate('reviews.user', 'name avatar')
+      .populate('reviews.replies.user', 'name avatar')
       .sort({ createdAt: -1 })
       .limit(limit)
       .exec();
@@ -367,6 +372,7 @@ export class ProductsService {
       .populate('category', 'name slug')
       .populate('brand', 'name slug logo')
       .populate('reviews.user', 'name avatar')
+      .populate('reviews.replies.user', 'name avatar')
       .sort({ soldCount: -1 })
       .limit(limit)
       .exec();
@@ -382,6 +388,8 @@ export class ProductsService {
       .populate('category', 'name slug')
       .populate('brand', 'name slug logo')
       .populate('reviews.user', 'name avatar')
+      .populate('reviews.replies.user', 'name avatar')
+
       .sort({ discount: -1 })
       .limit(limit)
       .exec();
@@ -476,8 +484,8 @@ export class ProductsService {
     isAdmin: boolean,
     replyDto: ReplyReviewDto,
   ): Promise<ProductDocument> {
-    // Sử dụng $push operator để đảm bảo push vào array đúng cách
-    const product = await this.productModel.findOneAndUpdate(
+    // Push reply
+    await this.productModel.findOneAndUpdate(
       {
         _id: productId,
         isDeleted: false,
@@ -499,11 +507,18 @@ export class ProductsService {
       { new: true },
     );
 
-    if (!product) {
+    // Lấy lại product và populate
+    const populatedProduct = await this.productModel
+      .findById(productId)
+      .populate('reviews.user', 'name avatar') // populate user chính của review
+      .populate('reviews.replies.user', 'name avatar') // populate user của reply nếu có ObjectId
+      .exec();
+
+    if (!populatedProduct) {
       throw new NotFoundException('Review không tồn tại');
     }
 
-    return product;
+    return populatedProduct;
   }
 
   async approveReview(
