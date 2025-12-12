@@ -197,7 +197,8 @@ export class ProductsService {
         isDeleted: false,
       })
       .populate('category', 'name slug description')
-      .populate('brand', 'name slug logo description');
+      .populate('brand', 'name slug logo description')
+      .populate('reviews.user', 'name avatar');
 
     if (!product) {
       throw new NotFoundException('Product không tồn tại');
@@ -213,7 +214,8 @@ export class ProductsService {
         isDeleted: false,
       })
       .populate('category', 'name slug description')
-      .populate('brand', 'name slug logo description');
+      .populate('brand', 'name slug logo description')
+      .populate('reviews.user', 'name avatar');
 
     if (!product) {
       throw new NotFoundException('Product không tồn tại');
