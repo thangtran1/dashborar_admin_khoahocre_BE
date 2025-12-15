@@ -95,6 +95,7 @@ export class AuthService {
         username: user.name,
         avatar: user.avatar || null,
         role: user.role,
+        loginCount: user.loginCount,
       },
     };
   }
