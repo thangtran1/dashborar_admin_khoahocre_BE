@@ -311,28 +311,6 @@ export class ProductsController {
     };
   }
 
-  // Approve review (Admin only)
-  @Patch(':productId/reviews/:reviewId/approve')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
-  async approveReview(
-    @Param('productId') productId: string,
-    @Param('reviewId') reviewId: string,
-  ) {
-    const review = await this.productsService.approveReview(
-      productId,
-      reviewId,
-    );
-    if (!review) {
-      throw new NotFoundException('Không tìm thấy review');
-    }
-    return {
-      success: true,
-      message: 'Phản hồi review thành công',
-      data: review,
-    };
-  }
-
   // Delete review (Admin only)
   @Delete(':productId/reviews/:reviewId')
   @UseGuards(JwtAuthGuard, RolesGuard)

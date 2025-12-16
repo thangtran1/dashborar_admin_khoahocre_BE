@@ -454,7 +454,6 @@ export class ProductsService {
       type: hasPurchased ? 'Đã mua hàng' : 'Chưa mua hàng',
       images: createReviewDto.images || [],
       replies: [],
-      isApproved: false,
     };
 
     product.reviews.push(review as any);
@@ -519,29 +518,6 @@ export class ProductsService {
     }
 
     return populatedProduct;
-  }
-
-  async approveReview(
-    productId: string,
-    reviewId: string,
-  ): Promise<ProductDocument> {
-    const product = await this.productModel.findOneAndUpdate(
-      {
-        _id: productId,
-        isDeleted: false,
-        'reviews._id': reviewId,
-      },
-      {
-        $set: { 'reviews.$.isApproved': true },
-      },
-      { new: true },
-    );
-
-    if (!product) {
-      throw new NotFoundException('Review không tồn tại');
-    }
-
-    return product;
   }
 
   async deleteReview(

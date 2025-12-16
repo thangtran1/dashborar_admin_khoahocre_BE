@@ -56,9 +56,6 @@ export class Review {
 
   @Prop({ type: [ReviewReply], default: [] })
   replies: ReviewReply[];
-
-  @Prop({ default: false })
-  isApproved: boolean;
 }
 
 // Embedded schema cho Product Image
