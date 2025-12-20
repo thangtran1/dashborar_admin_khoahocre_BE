@@ -80,6 +80,9 @@ export class Product {
   })
   name: string;
 
+  @Prop({ required: true, trim: true, maxlength: 200 })
+  productType?: string;
+
   @Prop({
     required: true,
     unique: true,

@@ -9,11 +9,16 @@ import {
 } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 import { ProductStatus } from '../schemas/product.schema';
+import { ProductType } from './create-product.dto';
 
 export class QueryProductDto {
   @IsOptional()
   @IsString()
   search?: string;
+
+  @IsOptional()
+  @IsEnum(ProductType)
+  productType?: ProductType;
 
   @IsOptional()
   @IsMongoId()

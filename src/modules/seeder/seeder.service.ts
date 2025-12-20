@@ -877,6 +877,7 @@ export class SeederService {
     const products = [
       {
         name: 'iPhone 16 Pro Max 512GB',
+        productType: 'iPhone',
         slug: 'iphone-16-pro-max-512gb',
         price: 26900000,
         discount: 5,
@@ -932,6 +933,7 @@ export class SeederService {
       },
       {
         name: 'Laptop Dell Inspiron 14 5440 D0F3W - Nhập khẩu chính hãng',
+        productType: 'Laptop',
         slug: 'laptop-dell-inspiron-14-5440-d0f3w-nhap-khau-chinh-hang',
         price: 16900000,
         discount: 5,
@@ -1005,6 +1007,7 @@ export class SeederService {
       },
       {
         name: 'Camera IP 360 độ 3MP Xiaomi Mi Home Security C301',
+        productType: 'Camera',
         slug: 'camera-ip-360-o-3mp-xiaomi-mi-home-security-c301',
         price: 860000,
         discount: 18,

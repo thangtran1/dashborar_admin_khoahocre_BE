@@ -42,11 +42,23 @@ class DimensionsDto {
   height: number;
 }
 
+export enum ProductType {
+  IPHONE = 'iPhone',
+  MACBOOK = 'MacBook',
+  ANDROID = 'Android',
+  LAPTOP = 'Laptop',
+  CAMERA = 'Camera',
+  TABLET = 'Tablet',
+}
+
 export class CreateProductDto {
   @IsString()
   @MinLength(2)
   @MaxLength(200)
   name: string;
+
+  @IsEnum(ProductType)
+  productType: ProductType;
 
   @IsString()
   @IsOptional()

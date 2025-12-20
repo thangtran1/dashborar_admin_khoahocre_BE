@@ -111,9 +111,13 @@ export class ProductsService {
     if (search) {
       filter.$or = [
         { name: { $regex: search, $options: 'i' } },
+        { productType: { $regex: search, $options: 'i' } },
         { description: { $regex: search, $options: 'i' } },
         { tags: { $in: [new RegExp(search, 'i')] } },
       ];
+    }
+    if (query.productType) {
+      filter.productType = query.productType;
     }
 
     // Filter theo category
