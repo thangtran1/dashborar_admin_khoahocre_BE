@@ -33,9 +33,6 @@ export class ProductsController {
     const featuredProducts = await this.productsService.getFeaturedProducts(
       limit ? parseInt(limit) : 10,
     );
-    if (!featuredProducts) {
-      throw new NotFoundException('Không tìm thấy sản phẩm nổi bật');
-    }
     return {
       success: true,
       message: 'Lấy sản phẩm nổi bật thành công',
@@ -49,9 +46,6 @@ export class ProductsController {
     const newProducts = await this.productsService.getNewProducts(
       limit ? parseInt(limit) : 10,
     );
-    if (!newProducts || newProducts.length === 0) {
-      throw new NotFoundException('Không tìm thấy sản phẩm mới');
-    }
     return {
       success: true,
       message: 'Lấy sản phẩm mới thành công',
@@ -65,9 +59,6 @@ export class ProductsController {
     const bestSellers = await this.productsService.getBestSellers(
       limit ? parseInt(limit) : 10,
     );
-    if (!bestSellers || bestSellers.length === 0) {
-      throw new NotFoundException('Không tìm thấy sản phẩm bán chạy');
-    }
     return {
       success: true,
       message: 'Lấy sản phẩm bán chạy thành công',
@@ -81,9 +72,6 @@ export class ProductsController {
     const dealProducts = await this.productsService.getDealProducts(
       limit ? parseInt(limit) : 10,
     );
-    if (!dealProducts || dealProducts.length === 0) {
-      throw new NotFoundException('Không tìm thấy sản phẩm deal');
-    }
     return {
       success: true,
       message: 'Lấy sản phẩm deal thành công',

@@ -25,7 +25,6 @@ import {
   Category,
   CategorySchema,
 } from '../categories/schemas/category.schema';
-import { Product, ProductSchema } from '../products/schemas/product.schema';
 
 @Module({
   imports: [
@@ -52,7 +51,6 @@ import { Product, ProductSchema } from '../products/schemas/product.schema';
     MongooseModule.forFeature([
       { name: Category.name, schema: CategorySchema },
     ]),
-    MongooseModule.forFeature([{ name: Product.name, schema: ProductSchema }]),
   ],
   controllers: [SeederController],
   providers: [SeederService],
