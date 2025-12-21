@@ -173,8 +173,6 @@ export class ProductsController {
 
   // Lấy danh sách products (Admin - có phân trang, filter)
   @Get()
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles('admin')
   async findAll(@Query() query: QueryProductDto) {
     const products = await this.productsService.findAll(query);
     if (!products) {
@@ -186,6 +184,21 @@ export class ProductsController {
       data: products,
     };
   }
+
+
+  @Get('active')
+  async getActiveCategories(@Query() query: QueryProductDto) {
+    const products = await this.productsService.getActiveProducts(query);
+    if (!products) {
+      throw new NotFoundException('Không tìm thấy danh sách products active');
+    }
+    return {
+      success: true,
+      message: 'Lấy danh sách products active thành công',
+      data: products,
+    };
+  }
+
 
   // Lấy chi tiết product theo ID
   @Get(':id')

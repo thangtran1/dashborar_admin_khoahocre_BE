@@ -190,6 +190,23 @@ export class ProductsService {
       },
     };
   }
+  
+  async getActiveProducts(query: QueryProductDto): Promise<ProductDocument[]> {
+    const { productType } = query;
+  
+    const filter: any = { status: 'active', isDeleted: false };
+  
+    if (productType) {
+      filter.productType = productType;
+    }
+  
+    return this.productModel
+      .find(filter) // dùng filter ở đây
+      .sort({ sortOrder: 1, name: 1 })
+      .populate('category', 'name slug')
+      .populate('brand', 'name slug')
+      .exec();
+  }
 
   async findOne(id: string): Promise<ProductDocument> {
     if (!Types.ObjectId.isValid(id)) {
