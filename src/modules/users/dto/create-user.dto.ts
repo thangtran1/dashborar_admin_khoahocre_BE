@@ -8,8 +8,9 @@ import {
   IsOptional,
   IsPhoneNumber,
   IsDateString,
+  IsArray,
 } from 'class-validator';
-import { UserRole, UserStatus } from '../schemas/user.schema';
+import { AuthProvider, UserRole, UserStatus } from '../schemas/user.schema';
 import { Transform } from 'class-transformer';
 
 export class CreateUserDto {
@@ -60,4 +61,9 @@ export class CreateUserDto {
   @IsString({ message: 'Tiểu sử phải là chuỗi' })
   @MaxLength(500, { message: 'Tiểu sử không được vượt quá 500 ký tự' })
   bio?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsEnum(AuthProvider, { each: true })
+  providers?: AuthProvider[];
 }

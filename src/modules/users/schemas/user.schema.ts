@@ -62,13 +62,8 @@ export class User {
   })
   status: UserStatus;
 
-  @Prop({
-    type: String,
-    enum: AuthProvider,
-    default: AuthProvider.LOCAL,
-    index: true,
-  })
-  provider?: AuthProvider;
+  @Prop({ type: [String], default: [] })
+  providers?: AuthProvider[]; // array provider, vd: ['google', 'github', 'local']
 
   @Prop()
   avatar?: string;

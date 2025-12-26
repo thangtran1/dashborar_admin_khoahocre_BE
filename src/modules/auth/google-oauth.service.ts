@@ -5,6 +5,7 @@ import { RegisterDto } from './dto/register.dto';
 import { JwtPayload } from '../../common/interfaces/jwt-payload.interface';
 import { GoogleUser } from 'src/types/entity';
 import { CreateUserDto } from '../users/dto/create-user.dto';
+import { AuthProvider } from '../users/schemas/user.schema';
 
 @Injectable()
 export class GoogleOAuthService {
@@ -29,11 +30,17 @@ export class GoogleOAuthService {
         name: googleUser.name || googleUser.email.split('@')[0],
         password: tempPassword,
         confirmPassword: tempPassword,
-        provider: 'google',
-        providerId: googleUser.googleId,
+        role: 'user',
+        providers: [AuthProvider.GOOGLE],
       };
-
       user = await this.usersService.create(registerDto as CreateUserDto);
+    } else {
+      // User đã tồn tại → thêm provider Google vào [] nếu chưa có
+      if (!user.providers) user.providers = [];
+      if (!user.providers.includes(AuthProvider.GOOGLE)) {
+        user.providers.push(AuthProvider.GOOGLE);
+        await this.usersService.update(user._id, { providers: user.providers });
+      }
     }
 
     // Tạo JWT tokens

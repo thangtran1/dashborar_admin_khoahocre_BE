@@ -5,6 +5,7 @@ import { UsersService } from '../users/users.service';
 import { RegisterDto } from './dto/register.dto';
 import { JwtPayload } from '../../common/interfaces/jwt-payload.interface';
 import { CreateUserDto } from '../users/dto/create-user.dto';
+import { AuthProvider } from '../users/schemas/user.schema';
 
 @Injectable()
 export class GitHubOAuthService {
@@ -38,18 +39,22 @@ export class GitHubOAuthService {
       // Tạo user mới
       const tempPassword = this.generateRandomPassword();
       const registerDto: RegisterDto = {
-        email: (githubUser as { email: string }).email,
+        email: githubUser.email,
         name:
-          (githubUser as { name: string }).name ||
-          (githubUser as { login: string }).login ||
-          (githubUser as { email: string }).email.split('@')[0],
+          githubUser.name || githubUser.login || githubUser.email.split('@')[0],
         password: tempPassword,
         confirmPassword: tempPassword,
         role: 'user', // Thêm role mặc định
-        provider: 'github', // Thêm provider để biết đăng nhập bằng phương thức nào
-        providerId: (githubUser as { id: string }).id, // ID từ GitHub
+        providers: [AuthProvider.GITHUB], // Thêm providers để biết đăng nhập bằng phương thức nào
       };
       user = await this.usersService.create(registerDto as CreateUserDto);
+    } else {
+      // User đã tồn tại → thêm provider GitHub vào [] nếu chưa có
+      if (!user.providers) user.providers = [];
+      if (!user.providers.includes(AuthProvider.GITHUB)) {
+        user.providers.push(AuthProvider.GITHUB);
+        await this.usersService.update(user._id, { providers: user.providers });
+      }
     }
 
     // 4️⃣ Tạo JWT token

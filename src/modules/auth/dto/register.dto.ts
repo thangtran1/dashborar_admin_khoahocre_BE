@@ -1,11 +1,14 @@
 import {
+  IsArray,
   IsEmail,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
   MinLength,
   Validate,
 } from 'class-validator';
+import { AuthProvider } from 'src/modules/users/schemas/user.schema';
 
 // Custom validator để kiểm tra confirmPassword
 class ConfirmPasswordValidator {
@@ -46,9 +49,10 @@ export class RegisterDto {
   @IsOptional()
   role?: string = 'user'; // Mặc định là 'user' nếu không được cung cấp
 
-  @IsString()
+  @IsArray()
+  @IsEnum(AuthProvider, { each: true }) // kiểm tra từng phần tử
   @IsOptional()
-  provider?: string; // 'local', 'google', 'github', etc.
+  providers?: AuthProvider[]; // ID từ provider (Google ID, GitHub ID, etc.)
 
   @IsString()
   @IsOptional()
