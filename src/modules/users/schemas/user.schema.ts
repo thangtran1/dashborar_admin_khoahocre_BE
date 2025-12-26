@@ -15,6 +15,12 @@ export enum UserStatus {
   INACTIVE = 'inactive',
 }
 
+export enum AuthProvider {
+  LOCAL = 'local',
+  GOOGLE = 'google',
+  GITHUB = 'github',
+}
+
 @Schema({ timestamps: true })
 export class User {
   @Prop({
@@ -55,6 +61,14 @@ export class User {
     index: true,
   })
   status: UserStatus;
+
+  @Prop({
+    type: String,
+    enum: AuthProvider,
+    default: AuthProvider.LOCAL,
+    index: true,
+  })
+  provider?: AuthProvider;
 
   @Prop()
   avatar?: string;
