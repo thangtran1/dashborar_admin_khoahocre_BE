@@ -25,6 +25,7 @@ import {
   Category,
   CategorySchema,
 } from '../categories/schemas/category.schema';
+import { Address, AddressSchema } from '../addresses/schemas/address.schema';
 
 @Module({
   imports: [
@@ -51,6 +52,8 @@ import {
     MongooseModule.forFeature([
       { name: Category.name, schema: CategorySchema },
     ]),
+
+    MongooseModule.forFeature([{ name: Address.name, schema: AddressSchema }]),
   ],
   controllers: [SeederController],
   providers: [SeederService],

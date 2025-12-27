@@ -16,6 +16,7 @@ import { FeedbackModule } from './modules/feedback/feedback.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { BrandsModule } from './modules/brands/brands.module';
 import { ProductsModule } from './modules/products/products.module';
+import { AddressesModule } from './modules/addresses/addresses.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { ProductsModule } from './modules/products/products.module';
     CategoriesModule,
     BrandsModule,
     ProductsModule,
+    AddressesModule,
   ],
 
   controllers: [AppController],

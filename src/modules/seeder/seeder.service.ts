@@ -31,6 +31,7 @@ import {
   CategoryDocument,
   CategoryStatus,
 } from '../categories/schemas/category.schema';
+import { Address, AddressDocument } from '../addresses/schemas/address.schema';
 @Injectable()
 export class SeederService {
   private readonly logger = new Logger(SeederService.name);
@@ -51,12 +52,15 @@ export class SeederService {
 
     @InjectModel(Brand.name)
     private brandModel: Model<BrandDocument>,
+
+    @InjectModel(Address.name)
+    private addressModel: Model<AddressDocument>,
   ) {}
 
   async seedAll(): Promise<void> {
     try {
       this.logger.log('Bắt đầu seed dữ liệu...');
-
+      const users = await this.seedUsers();
       await this.seedUsers();
       await this.seedNotifications();
       await this.seedMaintenance();
@@ -65,6 +69,7 @@ export class SeederService {
       await this.seedSystem();
       await this.seedBrands();
       await this.seedCategories();
+      await this.seedAddresses(users);
       this.logger.log('Hoàn thành seed dữ liệu!');
     } catch (error) {
       this.logger.error('Lỗi khi seed dữ liệu:', error);
@@ -84,6 +89,7 @@ export class SeederService {
       await this.systemModel.deleteMany({});
       await this.categoryModel.deleteMany({});
       await this.brandModel.deleteMany({});
+      await this.addressModel.deleteMany({});
       this.logger.log('Hoàn thành xóa dữ liệu!');
     } catch (error) {
       this.logger.error('Lỗi khi xóa dữ liệu:', error);
@@ -91,10 +97,10 @@ export class SeederService {
     }
   }
 
-  private async seedUsers(): Promise<void> {
+  private async seedUsers(): Promise<UserDocument[]> {
     const hashedPassword = await bcrypt.hash('123123', 10);
 
-    const users = [
+    const usersData = [
       {
         email: 'thangtrandz04@gmail.com',
         name: 'Admin',
@@ -289,15 +295,32 @@ export class SeederService {
       },
     ];
 
-    for (const user of users) {
-      const existingUser = await this.userModel.findOne({ email: user.email });
+    const createdUsers: UserDocument[] = [];
+
+    for (const userData of usersData) {
+      const existingUser = await this.userModel.findOne({
+        email: userData.email,
+      });
+
       if (!existingUser) {
-        await this.userModel.create(user);
-        this.logger.log(`Đã tạo user: ${user.email}`);
+        this.logger.log(`➕ Đã tạo user mới: ${userData.email}`);
       } else {
-        this.logger.log(`User đã tồn tại: ${user.email}`);
+        this.logger.log(
+          `🔄 User đã tồn tại (đang cập nhật): ${userData.email}`,
+        );
       }
+
+      // Vẫn dùng lệnh này để lấy được ID của User (dù mới hay cũ) trả về cho hàm Seed Address
+      const user = await this.userModel.findOneAndUpdate(
+        { email: userData.email },
+        { $set: userData },
+        { upsert: true, new: true },
+      );
+
+      createdUsers.push(user);
     }
+
+    return createdUsers;
   }
   private async seedNotifications(): Promise<void> {
     const notifications = [
@@ -873,5 +896,40 @@ export class SeederService {
         this.logger.log(`Category đã tồn tại: ${category.name}`);
       }
     }
+  }
+
+  private async seedAddresses(users: UserDocument[]): Promise<void> {
+    await this.addressModel.deleteMany({});
+
+    const addresses: any[] = [];
+
+    for (const user of users) {
+      addresses.push({
+        member_id: user._id as string,
+        type: 1,
+        title: 'Nhà riêng',
+        address: 'Số 10, Đường ABC',
+        full_address: `Số 10, Đường ABC, Đà Nẵng (User: ${user.name})`,
+        province_id: 4,
+        district_id: 242,
+        ward_id: 482,
+        is_default: true,
+      });
+
+      addresses.push({
+        member_id: user._id as string,
+        type: 2,
+        title: 'Công ty',
+        address: 'Tòa nhà X',
+        full_address: `Tòa nhà X, Quận Hải Châu, Đà Nẵng`,
+        province_id: 4,
+        district_id: 200,
+        ward_id: 300,
+        is_default: false,
+      });
+    }
+
+    await this.addressModel.insertMany(addresses);
+    this.logger.log(`✅ Đã seed ${addresses.length} địa chỉ.`);
   }
 }
