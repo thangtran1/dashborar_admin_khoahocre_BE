@@ -18,14 +18,19 @@ export class AddressesService {
   ) {}
 
   async create(userId: string, dto: CreateAddressDto) {
-    // 1. Kiểm tra dữ liệu rỗng (nếu DTO không bắt được)
-    if (!dto.full_address) {
+    const addressCount = await this.addressModel.countDocuments({
+      member_id: userId,
+    });
+    if (addressCount >= 3) {
       throw new BadRequestException(
-        'Thông tin địa chỉ và số điện thoại không được để trống',
+        'Bạn đã đạt giới hạn tối đa 10 địa chỉ. Vui lòng xóa bớt địa chỉ cũ để thêm mới.',
       );
     }
 
-    // 2. Kiểm tra trùng lặp địa chỉ cho cùng 1 user
+    if (!dto.full_address) {
+      throw new BadRequestException('Thông tin địa chỉ không được để trống');
+    }
+
     const existing = await this.addressModel.findOne({
       member_id: userId,
       full_address: dto.full_address,
@@ -36,8 +41,10 @@ export class AddressesService {
       );
     }
 
-    // 3. Xử lý logic địa chỉ mặc định
-    if (dto.is_default) {
+    const isFirstAddress = addressCount === 0;
+    const shouldBeDefault = isFirstAddress ? true : dto.is_default;
+
+    if (shouldBeDefault) {
       await this.addressModel.updateMany(
         { member_id: userId },
         { is_default: false },
@@ -46,6 +53,7 @@ export class AddressesService {
 
     const address = new this.addressModel({
       ...dto,
+      is_default: shouldBeDefault,
       member_id: userId,
     });
 
